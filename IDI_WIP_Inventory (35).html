@@ -1,0 +1,3158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IDI WIP Inventory System</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cG9seWdvbiBwb2ludHM9IjUwLDIgOTgsNTAgNTAsOTggMiw1MCIgZmlsbD0iIzE0MzA0ZSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1OCIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjgiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSIxIj5JREk8L3RleHQ+Cjwvc3ZnPg==">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj4KICA8cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzE0MzA0ZSIgcng9IjQwIi8+CiAgPHBvbHlnb24gcG9pbnRzPSI5MCwxMCAxNzAsOTAgOTAsMTcwIDEwLDkwIiBmaWxsPSIjNWE4ZmI1Ii8+CiAgPHRleHQgeD0iOTAiIHk9IjEwMyIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDgiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSIyIj5JREk8L3RleHQ+Cjwvc3ZnPg==">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IDI WIP">
+<meta name="theme-color" content="#14304e">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --navy: #14304e;
+  --navy-dark: #0d1e32;
+  --navy-light: #1a3a5c;
+  --accent: #5a8fb5;
+  --accent-warm: #b8d0e8;
+  --accent-light: #7aafd5;
+  --steel: #4a7fa5;
+  --steel-light: #b8d0e8;
+  --steel-pale: #e8f0f8;
+  --red: #c8281e;
+  --green: #1a7a40;
+  --white: #ffffff;
+  --gray-50: #f8f9fa;
+  --gray-100: #f0f2f5;
+  --gray-200: #e0e4ea;
+  --gray-400: #9aa5b4;
+  --gray-600: #4a5568;
+  --gray-800: #1a2332;
+  --font-head: 'Barlow Condensed', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(20,48,78,0.12);
+  --shadow-lg: 0 8px 32px rgba(20,48,78,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--gray-100); font-family: var(--font-body); color: var(--gray-800); min-height: 100vh; }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+input[type=number] { -moz-appearance: textfield; }
+
+/* ── HEADER ── */
+.app-header {
+  background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%);
+  border-bottom: 2px solid var(--accent);
+  padding: 0;
+}
+.header-main {
+  display: flex; align-items: center; gap: 0; min-height: 64px;
+}
+.header-brand {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px; border-right: 1px solid rgba(200,160,64,0.2);
+}
+.brand-diamond {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: var(--accent); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  display: flex; align-items: center; justify-content: center;
+}
+.brand-idi {
+  font-family: var(--font-head); font-size: 14px; font-weight: 800;
+  color: var(--navy); letter-spacing: 1px;
+}
+.brand-text { display: flex; flex-direction: column; }
+.brand-name {
+  font-family: var(--font-head); font-size: 15px; font-weight: 700;
+  color: var(--white); letter-spacing: 2px; text-transform: uppercase; line-height: 1;
+}
+.brand-sub {
+  font-size: 10px; color: rgba(200,160,64,0.6); letter-spacing: 2px;
+  text-transform: uppercase; margin-top: 2px;
+}
+.header-center {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 8px 16px;
+}
+.header-title {
+  font-family: var(--font-head); font-size: 22px; font-weight: 800;
+  color: #ffffff; letter-spacing: 4px; text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(90,143,181,0.4);
+}
+.header-tagline {
+  font-size: 9px; color: rgba(200,160,64,0.4); letter-spacing: 3px;
+  text-transform: uppercase; margin-top: 2px;
+}
+.header-meta {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-left: 1px solid rgba(200,160,64,0.2);
+}
+
+/* ── AUTH BAR ── */
+#auth-bar {
+  background: rgba(0,0,0,0.3); border-top: 1px solid rgba(200,160,64,0.1);
+  padding: 5px 14px; display: flex; align-items: center; gap: 8px; font-size: 11px;
+}
+#auth-bar.hidden { display: none; }
+#sync-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #4dcc80; flex-shrink: 0; transition: background 0.3s;
+}
+#sync-dot.syncing { background: var(--accent); animation: pulse 1s infinite; }
+#sync-dot.error { background: var(--red); }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+#auth-user-name { color: rgba(255,255,255,0.65); flex: 1; font-family: var(--font-body); }
+#auth-user-role { color: rgba(200,160,64,0.5); font-size: 10px; letter-spacing: 0.5px; }
+.auth-btn {
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.5); border-radius: 5px; padding: 3px 9px;
+  font-family: var(--font-head); font-size: 11px; font-weight: 600;
+  cursor: pointer; letter-spacing: 0.5px; transition: all 0.15s;
+}
+.auth-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.auth-btn.gold { background: rgba(200,160,64,0.15); border-color: rgba(200,160,64,0.4); color: var(--accent); }
+.auth-btn.gold:hover { background: rgba(200,160,64,0.25); }
+
+/* ── NAV TABS ── */
+.nav-tabs {
+  display: flex; gap: 1px; background: rgba(0,0,0,0.25);
+  overflow-x: auto; scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.navbtn {
+  padding: 9px 14px; border: none; cursor: pointer;
+  font-family: var(--font-head); font-size: 12px; font-weight: 600;
+  letter-spacing: 1.5px; background: transparent; color: rgba(255,255,255,0.35);
+  border-bottom: 3px solid transparent; transition: all 0.15s;
+  text-transform: uppercase; white-space: nowrap;
+}
+.navbtn:hover { color: rgba(184,208,232,0.9); background: rgba(90,143,181,0.1); }
+.navbtn.active { background: rgba(90,143,181,0.15); color: #fff; border-bottom-color: var(--accent); }
+
+/* ── SCREENS ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── LOGIN SCREEN ── */
+#login-screen {
+  position: fixed; inset: 0;
+  background: linear-gradient(160deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%);
+  z-index: 9999; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 32px;
+}
+#login-screen.hidden { display: none; }
+.login-diamond {
+  width: 80px; height: 80px;
+  background: var(--accent); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 0 40px rgba(200,160,64,0.4);
+}
+.login-idi { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: var(--navy); letter-spacing: 2px; }
+.login-title { font-family: var(--font-head); font-size: 36px; font-weight: 800; color: var(--accent); letter-spacing: 6px; margin-bottom: 4px; }
+.login-sub { font-size: 11px; color: rgba(200,160,64,0.5); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+.login-tagline { font-size: 11px; color: rgba(255,255,255,0.2); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; }
+.login-divider { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); margin: 0 auto 40px; }
+.login-form { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
+.login-input {
+  width: 100%; padding: 13px 16px;
+  border: 1.5px solid rgba(90,143,181,0.3); border-radius: 10px;
+  background: rgba(255,255,255,0.07); color: #fff;
+  font-size: 15px; font-family: var(--font-body); outline: none; transition: border-color 0.2s;
+}
+.login-input:focus { border-color: var(--accent); }
+.login-input::placeholder { color: rgba(255,255,255,0.3); }
+.login-submit {
+  background: var(--accent); color: var(--navy-dark); border: none; border-radius: 10px;
+  padding: 14px; font-family: var(--font-head); font-size: 16px; font-weight: 700;
+  cursor: pointer; letter-spacing: 1px; transition: all 0.15s;
+}
+.login-submit:hover { background: var(--accent-light); }
+.login-status { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 8px; min-height: 18px; text-align: center; }
+
+/* ── JOIN SCREEN ── */
+#join-screen {
+  position: fixed; inset: 0; background: var(--navy);
+  z-index: 9998; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 32px;
+}
+#join-screen.hidden { display: none; }
+.join-box {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(200,160,64,0.2);
+  border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 340px;
+}
+.join-title { font-family: var(--font-head); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; text-align: center; }
+.join-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 20px; text-align: center; line-height: 1.6; }
+.join-code-input {
+  width: 100%; padding: 16px; border: 2px solid rgba(200,160,64,0.3); border-radius: 10px;
+  background: rgba(0,0,0,0.3); color: var(--accent);
+  font-family: var(--font-head); font-size: 32px; font-weight: 700;
+  letter-spacing: 10px; text-align: center; text-transform: uppercase; outline: none;
+  box-sizing: border-box; margin-bottom: 10px;
+}
+.join-status { font-size: 12px; color: rgba(255,100,100,0.8); min-height: 18px; margin-bottom: 12px; text-align: center; }
+.join-btn {
+  width: 100%; background: var(--accent); color: var(--navy-dark);
+  border: none; border-radius: 10px; padding: 13px;
+  font-family: var(--font-head); font-size: 15px; font-weight: 700;
+  cursor: pointer; margin-bottom: 10px; letter-spacing: 0.5px;
+}
+.join-skip {
+  width: 100%; background: transparent; color: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 11px;
+  font-family: var(--font-head); font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+/* ── CARDS & LAYOUT ── */
+.page-content { padding: 16px; max-width: 900px; margin: 0 auto; }
+.card {
+  background: #fff; border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+  box-shadow: var(--shadow); margin-bottom: 14px;
+}
+.card-header {
+  padding: 12px 16px; border-bottom: 1px solid var(--gray-200);
+  display: flex; align-items: center; gap: 10px;
+}
+.card-title { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--navy); letter-spacing: 1.5px; text-transform: uppercase; }
+.card-body { padding: 14px 16px; }
+
+/* ── BUTTONS ── */
+.btn {
+  border: none; border-radius: 8px; cursor: pointer;
+  font-family: var(--font-head); font-weight: 700; letter-spacing: 0.5px;
+  transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-primary { background: var(--navy); color: #fff; padding: 10px 18px; font-size: 13px; }
+.btn-primary:hover { background: var(--navy-light); }
+.btn-gold { background: var(--accent); color: var(--navy-dark); padding: 10px 18px; font-size: 13px; }
+.btn-gold:hover { background: var(--accent-light); }
+.btn-green { background: var(--green); color: #fff; padding: 10px 18px; font-size: 13px; }
+.btn-red { background: var(--red); color: #fff; padding: 10px 18px; font-size: 13px; }
+.btn-ghost { background: var(--gray-100); color: var(--gray-600); padding: 9px 16px; font-size: 12px; border: 1.5px solid var(--gray-200); }
+.btn-ghost:hover { background: var(--gray-200); }
+.btn-sm { padding: 6px 12px; font-size: 11px; }
+.btn-lg { padding: 14px 28px; font-size: 16px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── FORM ELEMENTS ── */
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+.field label { font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 1.5px; }
+.field input, .field select, .field textarea {
+  background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 8px;
+  color: var(--gray-800); font-family: var(--font-body); font-size: 14px;
+  padding: 9px 12px; outline: none; transition: border-color 0.15s; width: 100%;
+}
+.field input:focus, .field select:focus { border-color: var(--steel); }
+.htog { display: flex; background: var(--gray-100); border: 1.5px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+.htbtn {
+  flex: 1; padding: 8px 4px; border: none; cursor: pointer;
+  font-family: var(--font-head); font-size: 13px; font-weight: 700;
+  background: transparent; color: var(--gray-400); transition: all 0.15s;
+}
+.htbtn.active { background: var(--navy); color: var(--accent); }
+
+/* ── COUNTING MODAL ── */
+.count-modal {
+  position: fixed; inset: 0; background: var(--navy-dark);
+  z-index: 5000; display: none; flex-direction: column; overflow: hidden;
+}
+.count-modal.open { display: flex; }
+.count-header {
+  background: var(--navy); border-bottom: 2px solid var(--accent);
+  padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+}
+.count-progress-bar {
+  flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;
+}
+.count-progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s; }
+.count-step-label { font-family: var(--font-head); font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 2px; white-space: nowrap; }
+.count-close { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.5); border-radius: 6px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.count-body { flex: 1; overflow-y: auto; padding: 20px 16px; }
+.count-footer {
+  background: var(--navy); border-top: 1px solid rgba(200,160,64,0.2);
+  padding: 12px 16px; display: flex; gap: 10px; align-items: center;
+}
+.step-title { font-family: var(--font-head); font-size: 28px; font-weight: 800; color: #fff; letter-spacing: 2px; margin-bottom: 6px; }
+.step-hint { font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 1px; margin-bottom: 20px; }
+
+/* TYPE/SPECIE/GRADE grids */
+.type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
+.type-btn {
+  background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 14px 8px; cursor: pointer; text-align: center;
+  transition: all 0.15s;
+}
+.type-btn .type-code { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: #fff; display: block; }
+.type-btn .type-label { font-size: 9px; color: rgba(255,255,255,0.4); display: block; margin-top: 2px; letter-spacing: 1px; }
+.type-btn.selected, .type-btn:hover { background: var(--navy-light); border-color: var(--accent); }
+.type-btn.selected .type-code { color: var(--accent); }
+
+/* Thickness presets */
+.thk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.thk-btn {
+  background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 16px 8px; cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.thk-btn .thk-val { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: #fff; display: block; }
+.thk-btn .thk-frac { font-size: 11px; color: rgba(255,255,255,0.4); display: block; margin-top: 2px; }
+.thk-btn.selected { background: var(--navy-light); border-color: var(--accent); }
+.thk-btn.selected .thk-val { color: var(--accent); }
+
+/* Numpad */
+.numpad-display {
+  background: rgba(0,0,0,0.3); border: 2px solid var(--accent); border-radius: 12px;
+  padding: 16px 20px; text-align: center; margin-bottom: 16px;
+}
+.numpad-value { font-family: var(--font-head); font-size: 48px; font-weight: 800; color: var(--accent); line-height: 1; }
+.numpad-unit { font-size: 13px; color: rgba(200,160,64,0.5); letter-spacing: 2px; margin-top: 4px; }
+.numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.numpad-key {
+  background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 10px; padding: 18px; font-family: var(--font-head);
+  font-size: 22px; font-weight: 700; color: #fff; cursor: pointer; text-align: center;
+  transition: all 0.1s; user-select: none;
+}
+.numpad-key:active { background: rgba(255,255,255,0.2); transform: scale(0.97); }
+.numpad-key.backspace { font-size: 18px; color: var(--accent); }
+.numpad-key.zero { grid-column: span 2; }
+.numpad-key.decimal { }
+
+/* UOM toggle */
+.uom-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+.uom-btn {
+  flex: 1; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 18px; cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.uom-btn .uom-label { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: #fff; display: block; }
+.uom-btn .uom-sub { font-size: 10px; color: rgba(255,255,255,0.4); display: block; margin-top: 4px; }
+.uom-btn.selected { background: var(--navy-light); border-color: var(--accent); }
+.uom-btn.selected .uom-label { color: var(--accent); }
+
+/* Review screen */
+.review-block {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 14px; margin-bottom: 12px;
+}
+.review-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.review-row:last-child { border-bottom: none; }
+.review-label { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; }
+.review-value { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: #fff; }
+.review-value.gold { color: var(--accent); }
+.review-value.green { color: #4dcc80; }
+.review-value.red { color: #ff8080; }
+.bf-display {
+  background: rgba(90,143,181,0.1); border: 2px solid var(--accent); border-radius: 12px;
+  padding: 16px; text-align: center; margin-bottom: 12px;
+}
+.bf-number { font-family: var(--font-head); font-size: 40px; font-weight: 800; color: var(--accent); line-height: 1; }
+.bf-label { font-size: 11px; color: rgba(200,160,64,0.6); letter-spacing: 2px; margin-top: 4px; }
+.value-display {
+  background: rgba(26,122,64,0.15); border: 2px solid var(--green); border-radius: 12px;
+  padding: 14px; text-align: center; margin-bottom: 12px;
+}
+.value-number { font-family: var(--font-head); font-size: 36px; font-weight: 800; color: #4dcc80; line-height: 1; }
+.value-label { font-size: 11px; color: rgba(77,204,128,0.6); letter-spacing: 2px; margin-top: 4px; }
+.value-breakdown { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 6px; font-style: italic; }
+
+/* Rework / Order toggles */
+.flag-row { display: flex; gap: 10px; margin-bottom: 12px; }
+.flag-btn {
+  flex: 1; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 14px; cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.flag-btn .flag-label { font-family: var(--font-head); font-size: 15px; font-weight: 700; color: #fff; display: block; }
+.flag-btn.rework-on { background: rgba(200,40,30,0.2); border-color: var(--red); }
+.flag-btn.rework-on .flag-label { color: #ff8080; }
+.flag-btn.order-on { background: rgba(200,160,64,0.15); border-color: var(--accent); }
+.flag-btn.order-on .flag-label { color: var(--accent); }
+.count-notes-inp {
+  width: 100%; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 8px; color: #fff; font-family: var(--font-body); font-size: 14px;
+  padding: 10px 12px; outline: none; resize: none;
+}
+.lot-inp {
+  width: 100%; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 8px; color: #fff; font-family: var(--font-body); font-size: 14px;
+  padding: 10px 12px; outline: none; margin-top: 8px;
+}
+
+/* ── ENTRY LIST ── */
+.entry-list { display: flex; flex-direction: column; gap: 8px; }
+.entry-card {
+  background: #fff; border: 1.5px solid var(--gray-200); border-radius: 10px;
+  padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px;
+  box-shadow: var(--shadow);
+}
+.entry-type-badge {
+  background: var(--navy); color: var(--accent); font-family: var(--font-head);
+  font-size: 13px; font-weight: 800; padding: 4px 8px; border-radius: 6px;
+  white-space: nowrap; letter-spacing: 1px; flex-shrink: 0;
+}
+.entry-details { flex: 1; min-width: 0; }
+.entry-main { font-family: var(--font-head); font-size: 15px; font-weight: 700; color: var(--navy); }
+.entry-dims { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.entry-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.entry-pill {
+  font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+  font-family: var(--font-head); letter-spacing: 0.5px;
+}
+.pill-sf { background: var(--steel-pale); color: var(--steel); }
+.pill-val { background: #e8faf0; color: var(--green); }
+.pill-rework { background: #ffe8e8; color: var(--red); }
+.pill-order { background: #fff8e8; color: #8a6000; }
+.entry-timestamp { font-size: 9px; color: var(--gray-400); margin-top: 4px; }
+.entry-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.rm-btn-e { background: none; border: none; color: var(--gray-200); font-size: 18px; cursor: pointer; padding: 2px 5px; line-height: 1; border-radius: 4px; transition: all 0.15s; }
+.rm-btn-e:hover { color: var(--red); background: #fee; }
+
+/* ── ZONE SESSION HEADER ── */
+.zone-header {
+  background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+  border: 1.5px solid rgba(90,143,181,0.3);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.zone-info { display: flex; align-items: center; gap: 14px; }
+.zone-name { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: var(--accent); letter-spacing: 2px; }
+.zone-counter { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; letter-spacing: 1px; }
+.zone-stats { display: flex; gap: 20px; }
+.zone-stat { text-align: center; }
+.zone-stat-val { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: #fff; }
+.zone-stat-lbl { font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* ── TABLES ── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  background: var(--navy); color: rgba(255,255,255,0.7);
+  font-family: var(--font-head); font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; padding: 8px 10px; text-align: left;
+  border-bottom: 2px solid var(--accent); white-space: nowrap;
+}
+.data-table td { padding: 8px 10px; border-bottom: 1px solid var(--gray-100); font-size: 13px; vertical-align: middle; }
+.data-table tr:hover td { background: var(--gray-50); }
+.data-table tr:last-child td { border-bottom: none; }
+.tbl-wrap { overflow-x: auto; border-radius: 8px; border: 1.5px solid var(--gray-200); }
+
+/* ── SETTINGS / ADMIN ── */
+.settings-section { margin-bottom: 20px; }
+.settings-section-title {
+  font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--navy);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px;
+  padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+}
+.yield-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.yield-item {
+  background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 8px;
+  padding: 12px; display: flex; align-items: center; gap: 10px;
+}
+.yield-label { flex: 1; font-size: 13px; color: var(--gray-800); font-weight: 600; }
+.yield-input {
+  width: 70px; background: #fff; border: 1.5px solid var(--gray-200); border-radius: 6px;
+  text-align: center; font-family: var(--font-head); font-size: 16px; font-weight: 700;
+  color: var(--navy); padding: 6px; outline: none;
+}
+.yield-input:focus { border-color: var(--steel); }
+.yield-pct { font-size: 13px; color: var(--gray-400); font-weight: 700; }
+
+/* ── SUMMARY DASHBOARD ── */
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.stat-box {
+  background: var(--navy); border-radius: 10px; padding: 14px;
+  text-align: center; border: 1px solid rgba(200,160,64,0.2);
+}
+.stat-val { font-family: var(--font-head); font-size: 28px; font-weight: 800; color: var(--accent); }
+.stat-lbl { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; margin-top: 3px; }
+
+/* ── MODALS ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9000;
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: #fff; border-radius: 14px; max-width: 420px; width: 100%;
+  box-shadow: var(--shadow-lg); animation: popIn 0.2s ease;
+}
+@keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-header {
+  background: var(--navy); padding: 14px 18px; border-radius: 14px 14px 0 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 1px; }
+.modal-close { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.6); border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 14px; }
+.modal-body { padding: 18px; }
+.modal-footer { padding: 14px 18px; border-top: 1px solid var(--gray-200); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--navy); color: #fff; border-radius: 50px; padding: 12px 20px;
+  font-family: var(--font-head); font-size: 14px; font-weight: 600;
+  box-shadow: var(--shadow-lg); z-index: 9999; display: flex; align-items: center;
+  gap: 12px; transition: transform 0.3s ease; pointer-events: none;
+  border: 1px solid rgba(90,143,181,0.5); white-space: nowrap;
+}
+#toast.show { transform: translateX(-50%) translateY(0); pointer-events: all; }
+#toast button { background: var(--accent); color: var(--navy-dark); border: none; border-radius: 20px; padding: 4px 12px; font-family: var(--font-head); font-size: 12px; font-weight: 700; cursor: pointer; }
+
+/* ── EXPORT SECTION ── */
+.export-summary {
+  background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 10px;
+  padding: 14px; margin-bottom: 14px;
+}
+.export-meta { font-size: 12px; color: var(--gray-400); margin-top: 6px; }
+
+/* Lot price table */
+.lot-locked { background: #e8faf0; color: var(--green); font-weight: 700; font-size: 12px; padding: 2px 7px; border-radius: 4px; }
+.lot-unlocked { background: var(--gray-100); color: var(--gray-400); font-size: 12px; padding: 2px 7px; border-radius: 4px; }
+
+/* Responsive */
+@media (max-width: 520px) {
+  .header-title { font-size: 18px; letter-spacing: 3px; }
+  .yield-grid { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .numpad-key { padding: 15px; font-size: 20px; }
+  .page-content { padding: 10px; }
+}
+
+/* ── SCHEDULE / INVENTORY LIST ── */
+.inv-row {
+  background: #fff; border: 1.5px solid var(--gray-200); border-radius: 10px;
+  padding: 12px 14px; margin-bottom: 8px; display: flex;
+  align-items: center; gap: 12px; box-shadow: var(--shadow);
+  cursor: pointer; transition: border-color 0.15s;
+}
+.inv-row:hover { border-color: var(--steel); }
+.inv-row.active-session { border-color: var(--accent); border-width: 2px; }
+.inv-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: var(--accent); box-shadow: 0 0 8px rgba(200,160,64,0.6); animation: pulse 1.5s infinite; }
+.dot-done { background: var(--green); }
+.dot-planned { background: var(--gray-200); }
+
+/* Help */
+.help-card { background: #fff; border: 1.5px solid var(--gray-200); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px; }
+.help-title { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.help-body { font-size: 13px; color: var(--gray-600); line-height: 1.75; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-diamond"><span class="login-idi">IDI</span></div>
+  <div class="login-title">WIP</div>
+  <div class="login-sub">Indiana Dimension Inc.</div>
+  <div class="login-tagline">Work In Progress · Inventory System</div>
+  <div class="login-divider"></div>
+  <div class="login-form">
+    <input id="login-email" class="login-input" type="email" placeholder="Email address" autocomplete="email"
+      onfocus="this.style.borderColor='#c8a040'" onblur="this.style.borderColor='rgba(200,160,64,0.3)'"
+      onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
+    <input id="login-pass" class="login-input" type="password" placeholder="Password" autocomplete="current-password"
+      onfocus="this.style.borderColor='#c8a040'" onblur="this.style.borderColor='rgba(200,160,64,0.3)'"
+      onkeydown="if(event.key==='Enter')signInEmail()">
+    <button class="login-submit" onclick="signInEmail()">Sign In →</button>
+  </div>
+  <div class="login-status" id="login-status"></div>
+  <div style="position:absolute;bottom:20px;font-size:10px;color:rgba(255,255,255,0.15);letter-spacing:2px;text-transform:uppercase">IDI WIP Inventory · idiwood.com</div>
+</div>
+
+<!-- JOIN SCREEN -->
+<div id="join-screen" class="hidden" style="display:none">
+  <div style="font-family:var(--font-head);font-size:32px;font-weight:800;color:var(--accent);letter-spacing:4px;margin-bottom:4px">WIP SYSTEM</div>
+  <div style="font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:28px">INDIANA DIMENSION INC.</div>
+  <div class="join-box">
+    <div class="join-title">Join a Session</div>
+    <div class="join-sub">Enter the supervisor code to join an active inventory, or start as supervisor.</div>
+    <input id="join-code-input" class="join-code-input" type="text" maxlength="6" placeholder="XXXXXX" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()">
+    <div class="join-status" id="join-status"></div>
+    <button class="join-btn" onclick="joinAsCounter(document.getElementById('join-code-input').value)">Join Inventory →</button>
+    <button class="join-skip" onclick="skipJoinScreen()">Start as Supervisor</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-main">
+      <div class="header-brand">
+        <div class="brand-diamond"><span class="brand-idi">IDI</span></div>
+        <div class="brand-text">
+          <div class="brand-name">Indiana Dimension</div>
+          <div class="brand-sub">Logansport, Indiana</div>
+        </div>
+      </div>
+      <div class="header-center">
+        <div class="header-title">WIP INVENTORY</div>
+        <div class="header-tagline">Work In Progress · Accurate · Reliable · Fast</div>
+      </div>
+      <div class="header-meta" id="header-meta">
+        <!-- session info injected here -->
+      </div>
+    </div>
+    <div id="auth-bar" class="hidden">
+      <div id="sync-dot"></div>
+      <div style="display:flex;flex-direction:column;flex:1">
+        <div id="auth-user-name"></div>
+        <div id="auth-user-role"></div>
+      </div>
+      <button class="auth-btn" id="lang-toggle" onclick="toggleLang()" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2)">🇲🇽 Español</button>
+      <button class="auth-btn gold" onclick="showShareCode()" id="share-code-btn">🔗 Share Code</button>
+      <button class="auth-btn" onclick="doSignOut()">Sign Out</button>
+    </div>
+    <nav class="nav-tabs" id="main-nav">
+      <!-- Tabs rendered by renderNav() based on role -->
+    </nav>
+  </header>
+
+  <!-- DASHBOARD TAB (supervisor) -->
+  <div id="screen-count" class="screen active">
+    <div class="page-content">
+      <div id="count-session-banner"></div>
+      <div id="count-dashboard"></div>
+      <div id="count-entry-list"></div>
+    </div>
+  </div>
+
+  <!-- COUNT TAB (counter entry flow) -->
+  <div id="screen-counting" class="screen">
+    <div class="page-content">
+      <div id="counting-content"></div>
+    </div>
+  </div>
+
+  <!-- SESSIONS TAB -->
+  <div id="screen-sessions" class="screen">
+    <div class="page-content">
+      <div id="sessions-content"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="screen-history" class="screen">
+    <div class="page-content">
+      <div id="history-content"></div>
+    </div>
+  </div>
+
+  <!-- VALUATION TAB -->
+  <div id="screen-valuation" class="screen">
+    <div class="page-content">
+      <div id="valuation-content"></div>
+    </div>
+  </div>
+
+  <!-- LOTS TAB -->
+  <div id="screen-lots" class="screen">
+    <div class="page-content">
+      <div id="lots-content"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="screen-settings" class="screen">
+    <div class="page-content">
+      <div id="settings-content"></div>
+    </div>
+  </div>
+
+  <!-- MY ENTRIES TAB (counter) -->
+  <div id="screen-myentries" class="screen">
+    <div class="page-content">
+      <div id="myentries-content"></div>
+    </div>
+  </div>
+
+  <!-- IMPORT TAB -->
+  <div id="screen-import" class="screen">
+    <div class="page-content">
+      <div id="import-content"></div>
+    </div>
+  </div>
+
+  <!-- HELP TAB -->
+  <div id="screen-help" class="screen">
+    <div class="page-content">
+      <div id="help-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- COUNTING MODAL (full-screen) -->
+<div class="count-modal" id="count-modal">
+  <div class="count-header">
+    <button class="count-close" onclick="closeCountModal()">← Back</button>
+    <div class="count-progress-bar"><div class="count-progress-fill" id="count-progress-fill"></div></div>
+    <div class="count-step-label" id="count-step-label">STEP 1 OF 8</div>
+    <button class="count-close" style="color:#ff8080" onclick="cancelEntry()">✕ Cancel</button>
+  </div>
+  <div class="count-body" id="count-modal-body"></div>
+  <div class="count-footer" id="count-modal-footer"></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span id="toast-msg"></span></div>
+
+<!-- SHARE CODE MODAL -->
+<div class="modal-overlay" id="share-code-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">🔗 Supervisor Share Code</div>
+      <button class="modal-close" onclick="closeModal('share-code-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:11px;color:var(--gray-400);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Your Code</div>
+        <div id="share-code-display" style="font-family:var(--font-head);font-size:52px;font-weight:800;color:var(--navy);letter-spacing:10px;margin:8px 0"></div>
+        <div style="font-size:12px;color:var(--gray-400);line-height:1.6">Share this with counters. They sign in, enter this code, and join your inventory live.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('share-code-modal')">Close</button>
+      <button class="btn btn-primary" id="copy-code-btn" onclick="copyShareCode()">📋 Copy Code</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW SESSION MODAL -->
+<div class="modal-overlay" id="new-session-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">📅 New Inventory Session</div>
+      <button class="modal-close" onclick="closeModal('new-session-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Date</label><input type="date" id="ns-date" style="color-scheme:light"></div>
+      <div class="field"><label>Inventory Label</label><input type="text" id="ns-label" placeholder="e.g. Q2 2026 WIP Inventory"></div>
+      <div class="field"><label>Quarter / Period</label><input type="text" id="ns-quarter" placeholder="e.g. Q2 2026"></div>
+      <div class="field"><label>Notes</label><input type="text" id="ns-notes" placeholder="Optional notes"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('new-session-modal')">Cancel</button>
+      <button class="btn btn-gold" onclick="createSession()">Create Session →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ZONE / COUNTER SETUP MODAL -->
+<div class="modal-overlay" id="zone-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="zone-modal-title">📍 <span id="zm-title-text">Your WIP Location</span></div>
+      <button class="modal-close" onclick="closeModal('zone-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label id="zm-loc-label">WIP Location</label>
+        <select id="zm-location">
+          <option value="">— Select WIP Location —</option>
+          <option>SHIPPING DOCK</option>
+          <option>WAREHOUSE GS</option>
+          <option>WAREHOUSE LU</option>
+          <option>WAREHOUSE MO</option>
+          <option>WAREHOUSE RS</option>
+          <option>WIP CHOP 1-6</option>
+          <option>WIP DOOR</option>
+          <option>WIP MOULD</option>
+          <option>WIP PANEL</option>
+        </select>
+      </div>
+      <div class="field"><label id="zm-name-label">Your Name</label><input type="text" id="zm-counter" placeholder="e.g. Francisco"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('zone-modal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveZoneSetup()">Start Counting →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── FIREBASE CONFIG ──────────────────────────────────────────────────────────
+// TODO: Replace with your Firebase project config (same project as The Turn, or new)
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDh-b1Ge3I5jZUBc8GLIudeNquaHzCMi58",
+  authDomain: "idi-inv.firebaseapp.com",
+  projectId: "idi-inv",
+  storageBucket: "idi-inv.appspot.com",
+  messagingSenderId: "666569937160",
+  appId: "1:666569937160:web:fcc4849a5eb29a9c0f5cbd"
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+var db   = firebase.firestore();
+var auth = firebase.auth();
+
+
+// ── SPANISH / ENGLISH TRANSLATIONS ─────────────────────────────────────────
+var LANG = 'en'; // 'en' or 'es'
+
+var T = {
+  en: {
+    // Nav
+    count:'Count', sessions:'Sessions', history:'History',
+    valuation:'Valuation', lots:'Lots', settings:'Settings', help:'Help',
+    // Count tab
+    newEntry:'+ New Entry', changeZone:'Change Zone',
+    noActiveSession:'NO ACTIVE SESSION',
+    createSessionFirst:'Create a new inventory session to begin counting.',
+    goToSessions:'Go to Sessions',
+    wipDashboard:'WIP LOCATION DASHBOARD',
+    // Zone modal
+    yourWipLocation:'Your WIP Location', wipLocation:'WIP Location',
+    yourName:'Your Name', namePlaceholder:'e.g. Francisco',
+    startCounting:'Start Counting →', cancel:'Cancel',
+    // Steps
+    step_TYPE:'MATERIAL TYPE', step_TYPE_hint:'SELECT THE TYPE OF MATERIAL',
+    step_SPECIE:'SPECIES', step_SPECIE_hint:'SELECT THE WOOD SPECIES',
+    step_GRADE:'GRADE', step_GRADE_hint:'SELECT THE LUMBER GRADE',
+    step_THICKNESS:'THICKNESS', step_THICKNESS_hint:'SELECT OR ENTER IN INCHES',
+    step_WIDTH:'WIDTH', step_WIDTH_hint:'MEASURE ACTUAL WIDTH IN INCHES',
+    step_LENGTH:'LENGTH', step_LENGTH_hint:'MEASURE ACTUAL LENGTH',
+    step_LENGTH_hint_feet:'ESTIMATE BUNDLE LENGTH IN FEET',
+    step_UOM_QTY:'QUANTITY', step_UOM_QTY_hint:'SELECT UNIT AND ENTER COUNT',
+    step_PALLETS:'PALLETS / STACKS', step_PALLETS_hint:'HOW MANY PALLETS OR STACKS?',
+    step_REVIEW:'REVIEW', step_REVIEW_hint:'VERIFY BEFORE SAVING',
+    // UOM
+    each:'EACH', each_sub:'Count individual pieces',
+    rows:'ROWS', rows_sub:'Count by rows',
+    // Review fields
+    type:'Type', species:'Species', grade:'Grade', thickness:'Thickness',
+    width:'Width', length:'Length', qtyUom:'Qty / UOM', pallets:'Pallets / Stacks',
+    sqft:'SQ FT', estValue:'ESTIMATED VALUE',
+    rework:'REWORK', order:'ORDER', flagged:'FLAGGED', tapToFlag:'Tap to flag',
+    notes:'NOTES (OPTIONAL)', notesPlaceholder:'Add any notes...',
+    lotNumber:'APEX LOT # (if applicable)', lotPlaceholder:'e.g. 113548',
+    lotLockNote:'Lot number locks price across inventories automatically.',
+    saveEntry:'✓ Save Entry', back:'← Back',
+    // Toasts
+    selectType:'Select a type', selectSpecies:'Select a species',
+    enterThickness:'Enter thickness', enterWidth:'Enter width',
+    enterLength:'Enter length', enterQty:'Enter quantity',
+    entrySaved:'Entry saved ✓', entryDeleted:'Entry deleted',
+    // Units
+    inches:'INCHES', feet:'FEET',
+    perPallet:'per pallet',
+    // Misc
+    noEntries:'No entries yet. Tap + New Entry to start counting.',
+    noEntriesShort:'No entries',
+  },
+  es: {
+    // Nav
+    count:'Contar', sessions:'Sesiones', history:'Historial',
+    valuation:'Valuación', lots:'Lotes', settings:'Ajustes', help:'Ayuda',
+    // Count tab
+    newEntry:'+ Nueva Entrada', changeZone:'Cambiar Zona',
+    noActiveSession:'SIN SESIÓN ACTIVA',
+    createSessionFirst:'Crea una nueva sesión de inventario para comenzar.',
+    goToSessions:'Ir a Sesiones',
+    wipDashboard:'TABLERO DE UBICACIÓN WIP',
+    // Zone modal
+    yourWipLocation:'Tu Ubicación WIP', wipLocation:'Ubicación WIP',
+    yourName:'Tu Nombre', namePlaceholder:'ej. Francisco',
+    startCounting:'Empezar a Contar →', cancel:'Cancelar',
+    // Steps
+    step_TYPE:'TIPO DE MATERIAL', step_TYPE_hint:'SELECCIONA EL TIPO DE MATERIAL',
+    step_SPECIE:'ESPECIE', step_SPECIE_hint:'SELECCIONA LA ESPECIE DE MADERA',
+    step_GRADE:'GRADO', step_GRADE_hint:'SELECCIONA EL GRADO DE MADERA',
+    step_THICKNESS:'GROSOR', step_THICKNESS_hint:'SELECCIONA O INGRESA EN PULGADAS',
+    step_WIDTH:'ANCHO', step_WIDTH_hint:'MIDE EL ANCHO REAL EN PULGADAS',
+    step_LENGTH:'LARGO', step_LENGTH_hint:'MIDE EL LARGO REAL',
+    step_LENGTH_hint_feet:'ESTIMA EL LARGO DEL PAQUETE EN PIES',
+    step_UOM_QTY:'CANTIDAD', step_UOM_QTY_hint:'SELECCIONA UNIDAD E INGRESA CANTIDAD',
+    step_PALLETS:'PALETAS / PILAS', step_PALLETS_hint:'¿CUÁNTAS PALETAS O PILAS?',
+    step_REVIEW:'REVISAR', step_REVIEW_hint:'VERIFICA ANTES DE GUARDAR',
+    // UOM
+    each:'PIEZAS', each_sub:'Contar piezas individuales',
+    rows:'FILAS', rows_sub:'Contar por filas',
+    // Review fields
+    type:'Tipo', species:'Especie', grade:'Grado', thickness:'Grosor',
+    width:'Ancho', length:'Largo', qtyUom:'Cant / Unidad', pallets:'Paletas / Pilas',
+    sqft:'PIES²', estValue:'VALOR ESTIMADO',
+    rework:'RETRABAJO', order:'PEDIDO', flagged:'MARCADO', tapToFlag:'Toca para marcar',
+    notes:'NOTAS (OPCIONAL)', notesPlaceholder:'Agrega notas...',
+    lotNumber:'# LOTE APEX (si aplica)', lotPlaceholder:'ej. 113548',
+    lotLockNote:'El número de lote fija el precio automáticamente.',
+    saveEntry:'✓ Guardar Entrada', back:'← Atrás',
+    // Toasts
+    selectType:'Selecciona un tipo', selectSpecies:'Selecciona una especie',
+    enterThickness:'Ingresa el grosor', enterWidth:'Ingresa el ancho',
+    enterLength:'Ingresa el largo', enterQty:'Ingresa la cantidad',
+    entrySaved:'Entrada guardada ✓', entryDeleted:'Entrada eliminada',
+    // Units
+    inches:'PULGADAS', feet:'PIES',
+    perPallet:'por paleta',
+    // Misc
+    noEntries:'Sin entradas. Toca + Nueva Entrada para comenzar.',
+    noEntriesShort:'Sin entradas',
+  }
+};
+function t(key){ 
+  try { return (T&&T[LANG]&&T[LANG][key]) || (T&&T.en&&T.en[key]) || key; } 
+  catch(e){ return key; } 
+}
+function toggleLang(){
+  LANG = LANG==='en'?'es':'en';
+  // Update toggle button
+  var btn = document.getElementById('lang-toggle');
+  if(btn) btn.textContent = LANG==='en'?'🇲🇽 Español':'🇺🇸 English';
+  // Re-render nav and current tab
+  renderNav();
+  renderTab(TAB);
+}
+function renderNav(){
+  var nav = document.getElementById('main-nav');
+  if(!nav) return;
+
+  var supervisorTabs = [
+    {id:'count',     label:'Dashboard', icon:'📊'},
+    {id:'sessions',  label:'Sessions',  icon:'📅'},
+    {id:'counting',  label:'Count',     icon:'📋'},
+    {id:'history',   label:'History',   icon:'📦'},
+    {id:'lots',      label:'Lots',      icon:'🏷️'},
+    {id:'valuation', label:'Valuation', icon:'💲'},
+    {id:'settings',  label:'Settings',  icon:'⚙️'},
+    {id:'help',      label:'Help',      icon:'❓'},
+  ];
+
+  var counterTabs = [
+    {id:'counting',  label:LANG==='es'?'Contar':'Count',            icon:'📋'},
+    {id:'myentries', label:LANG==='es'?'Mis Entradas':'My Entries', icon:'📝'},
+    {id:'help',      label:LANG==='es'?'Ayuda':'Help',              icon:'❓'},
+  ];
+
+  var tabs = IS_SUPERVISOR ? supervisorTabs : counterTabs;
+  var activeTab = TAB || (IS_SUPERVISOR ? 'count' : 'counting');
+
+  // Store tab IDs globally so onclick can reference by index
+  window._NAV_TABS = tabs;
+
+  var html = '';
+  for(var i=0; i<tabs.length; i++){
+    var tb = tabs[i];
+    var isActive = activeTab === tb.id;
+    html += '<button class="navbtn'+(isActive?' active':'')+'" ';
+    html += 'id="tab-'+tb.id+'" ';
+    html += 'onclick="setTab(window._NAV_TABS['+i+'].id)">';
+    html += tb.icon+' '+tb.label.toUpperCase();
+    html += '</button>';
+  }
+  nav.innerHTML = html;
+}
+
+// ── ICIM LUMBER PRICE DATA (from your CSV i73r11-1760267.csv) ────────────────
+// Keyed by I73PART. Values: {descr, uom, unitCost, type:'LU'|'SH'}
+const ICIM_PRICES = {
+  // ── SHEET GOODS (SH - priced per sheet) ──
+  "LU1SB2UWHM": {descr:"4/4 SB 2-SIDED UNF WHM",uom:"SH",unitCost:93.42,type:"SH"},
+  "LU1SB2UWSM": {descr:"4/4 SB 2-SIDED UNF WSM",uom:"SH",unitCost:73.50,type:"SH"},
+  "LU1SB2UBSM": {descr:"4/4 SB 2-SIDED UNF BSM",uom:"SH",unitCost:65.10,type:"SH"},
+  "LU1SB2UROA": {descr:"4/4 SB 2-SIDED UNF ROA",uom:"SH",unitCost:58.80,type:"SH"},
+  "LU1SB2UHIC": {descr:"4/4 SB 2-SIDED UNF HIC",uom:"SH",unitCost:87.30,type:"SH"},
+  "LU1SB2UCHM": {descr:"4/4 SB 2-SIDED UNF CHM",uom:"SH",unitCost:102.90,type:"SH"},
+  "LU1CAB2UWHM":{descr:"4/4 CAB 2-SIDED UNF WHM",uom:"SH",unitCost:67.62,type:"SH"},
+  "LU1CAB2UWSM":{descr:"4/4 CAB 2-SIDED UNF WSM",uom:"SH",unitCost:52.50,type:"SH"},
+  "LU1CAB2UBSM":{descr:"4/4 CAB 2-SIDED UNF BSM",uom:"SH",unitCost:46.50,type:"SH"},
+  "LU1CAB2UROA":{descr:"4/4 CAB 2-SIDED UNF ROA",uom:"SH",unitCost:42.00,type:"SH"},
+  "LU1CAB2UHIC":{descr:"4/4 CAB 2-SIDED UNF HIC",uom:"SH",unitCost:63.00,type:"SH"},
+  "LU1SUP2UWHM":{descr:"4/4 SUP 2-SIDED UNF WHM",uom:"SH",unitCost:55.86,type:"SH"},
+  "LU1SUP2UWSM":{descr:"4/4 SUP 2-SIDED UNF WSM",uom:"SH",unitCost:43.47,type:"SH"},
+  "LU1SUP2UBSM":{descr:"4/4 SUP 2-SIDED UNF BSM",uom:"SH",unitCost:38.85,type:"SH"},
+  "LU1PF2UWHM": {descr:"4/4 PF 2-SIDED UNF WHM", uom:"SH",unitCost:41.58,type:"SH"},
+  "LU1PF2UWSM": {descr:"4/4 PF 2-SIDED UNF WSM", uom:"SH",unitCost:32.34,type:"SH"},
+  "LU1RUS2UWHM":{descr:"4/4 RUS 2-SIDED UNF WHM",uom:"SH",unitCost:32.34,type:"SH"},
+  "LU1RUS2UWSM":{descr:"4/4 RUS 2-SIDED UNF WSM",uom:"SH",unitCost:25.20,type:"SH"},
+  "LU22CSBUWHM":{descr:"2C/2A SB 2-SIDED UNF WHM",uom:"SH",unitCost:103.74,type:"SH"},
+  "LU22CSBUWSM":{descr:"2C/2A SB 2-SIDED UNF WSM",uom:"SH",unitCost:81.90,type:"SH"},
+  "LU22CSBUBSM":{descr:"2C/2A SB 2-SIDED UNF BSM",uom:"SH",unitCost:72.45,type:"SH"},
+  "LU22CSBU2UROA":{descr:"2C/2A SB 2-SIDED UNF ROA",uom:"SH",unitCost:65.10,type:"SH"},
+  "LU22CSBUHIC":{descr:"2C/2A SB 2-SIDED UNF HIC",uom:"SH",unitCost:96.60,type:"SH"},
+  "LU22CCABUWHM":{descr:"2C/2A CAB 2-SIDED UNF WHM",uom:"SH",unitCost:75.18,type:"SH"},
+  "LU22CCABUWSM":{descr:"2C/2A CAB 2-SIDED UNF WSM",uom:"SH",unitCost:58.38,type:"SH"},
+  "LU22CCABUBSM":{descr:"2C/2A CAB 2-SIDED UNF BSM",uom:"SH",unitCost:51.45,type:"SH"},
+  "LU22CCABUROA":{descr:"2C/2A CAB 2-SIDED UNF ROA",uom:"SH",unitCost:46.20,type:"SH"},
+  "LU22CSUPUWHM":{descr:"2C/2A SUP 2-SIDED UNF WHM",uom:"SH",unitCost:62.37,type:"SH"},
+  "LU22CSUPUWSM":{descr:"2C/2A SUP 2-SIDED UNF WSM",uom:"SH",unitCost:48.51,type:"SH"},
+  "LU22CPFUWHM": {descr:"2C/2A PF 2-SIDED UNF WHM", uom:"SH",unitCost:46.62,type:"SH"},
+  // ── LUMBER (BF - priced per board foot) ──
+  "LU1SBWHM":  {descr:"4/4 SB WHITE MAPLE",   uom:"BF",unitCost:2.9700,type:"LU",specie:"WHM",grade:"SB",thk:1.0},
+  "LU1SBWSM":  {descr:"4/4 SB WORMY SOFT MAPLE",uom:"BF",unitCost:1.9250,type:"LU",specie:"WSM",grade:"SB",thk:1.0},
+  "LU1SBBSM":  {descr:"4/4 SB BROWN SOFT MAPLE",uom:"BF",unitCost:1.8600,type:"LU",specie:"BSM",grade:"SB",thk:1.0},
+  "LU1SBROA":  {descr:"4/4 SB RED OAK",        uom:"BF",unitCost:1.6500,type:"LU",specie:"ROA",grade:"SB",thk:1.0},
+  "LU1SBCHE":  {descr:"4/4 SB CHERRY",          uom:"BF",unitCost:3.5700,type:"LU",specie:"CHE",grade:"SB",thk:1.0},
+  "LU1SBHIC":  {descr:"4/4 SB HICKORY",         uom:"BF",unitCost:2.5800,type:"LU",specie:"HIC",grade:"SB",thk:1.0},
+  "LU1SBBIR":  {descr:"4/4 SB BIRCH",           uom:"BF",unitCost:2.1000,type:"LU",specie:"BIR",grade:"SB",thk:1.0},
+  "LU1SBWAL":  {descr:"4/4 SB WALNUT",          uom:"BF",unitCost:6.2000,type:"LU",specie:"WAL",grade:"SB",thk:1.0},
+  "LU1SBWOA":  {descr:"4/4 SB WHITE OAK",       uom:"BF",unitCost:2.1000,type:"LU",specie:"WOA",grade:"SB",thk:1.0},
+  "LU1SBALD":  {descr:"4/4 SB ALDER",           uom:"BF",unitCost:2.2000,type:"LU",specie:"ALD",grade:"SB",thk:1.0},
+  "LU1SBGBE":  {descr:"4/4 SB GRADE BEECH",     uom:"BF",unitCost:1.5800,type:"LU",specie:"GBE",grade:"SB",thk:1.0},
+  "LU1SBBHM":  {descr:"4/4 SB BROWN HARD MAPLE",uom:"BF",unitCost:2.4000,type:"LU",specie:"BHM",grade:"SB",thk:1.0},
+  "LU1SBHMA":  {descr:"4/4 SB HARD MAPLE",      uom:"BF",unitCost:2.8500,type:"LU",specie:"HMA",grade:"SB",thk:1.0},
+  "LU1SBSMA":  {descr:"4/4 SB SOFT MAPLE",      uom:"BF",unitCost:1.7500,type:"LU",specie:"SMA",grade:"SB",thk:1.0},
+  "LU12CWHM":  {descr:"4/4 2A WHITE HARD MAPLE", uom:"BF",unitCost:1.2100,type:"LU",specie:"WHM",grade:"2A",thk:1.0},
+  "LU12CWSM":  {descr:"4/4 2A WORMY SOFT MAPLE",uom:"BF",unitCost:0.9200,type:"LU",specie:"WSM",grade:"2A",thk:1.0},
+  "LU12CBSM":  {descr:"4/4 2C BROWN SOFT MAPLE",uom:"BF",unitCost:1.3850,type:"LU",specie:"BSM",grade:"2C",thk:1.0},
+  "LU12CROA":  {descr:"4/4 2C RED OAK",         uom:"BF",unitCost:1.2300,type:"LU",specie:"ROA",grade:"2C",thk:1.0},
+  "LU12CCHE":  {descr:"4/4 2C CHERRY",          uom:"BF",unitCost:2.6568,type:"LU",specie:"CHE",grade:"2C",thk:1.0},
+  "LU12CHIC":  {descr:"4/4 2C HICKORY",         uom:"BF",unitCost:1.9200,type:"LU",specie:"HIC",grade:"2C",thk:1.0},
+  "LU12CBIR":  {descr:"4/4 2C BIRCH",           uom:"BF",unitCost:1.5638,type:"LU",specie:"BIR",grade:"2C",thk:1.0},
+  "LU12CWAL":  {descr:"4/4 2C WALNUT",          uom:"BF",unitCost:4.6175,type:"LU",specie:"WAL",grade:"2C",thk:1.0},
+  "LU12CWOA":  {descr:"4/4 2C WHITE OAK",       uom:"BF",unitCost:1.5638,type:"LU",specie:"WOA",grade:"2C",thk:1.0},
+  "LU12CALD":  {descr:"4/4 2C ALDER",           uom:"BF",unitCost:1.6394,type:"LU",specie:"ALD",grade:"2C",thk:1.0},
+  "LU12CGBE":  {descr:"4/4 2C GRADE BEECH",     uom:"BF",unitCost:1.1769,type:"LU",specie:"GBE",grade:"2C",thk:1.0},
+  "LU12CBHM":  {descr:"4/4 2C BROWN HARD MAPLE",uom:"BF",unitCost:1.7888,type:"LU",specie:"BHM",grade:"2C",thk:1.0},
+  "LU12CHMA":  {descr:"4/4 2C HARD MAPLE",      uom:"BF",unitCost:2.1225,type:"LU",specie:"HMA",grade:"2C",thk:1.0},
+  "LU12CSMA":  {descr:"4/4 2C SOFT MAPLE",      uom:"BF",unitCost:1.3044,type:"LU",specie:"SMA",grade:"2C",thk:1.0},
+  "LU22CWHM":  {descr:"2C/2A 2C WHITE MAPLE",   uom:"BF",unitCost:2.4591,type:"LU",specie:"WHM",grade:"2C",thk:2.0},
+  "LU22CWSM":  {descr:"2C/2A 2C WORMY SFT MAPLE",uom:"BF",unitCost:1.5963,type:"LU",specie:"WSM",grade:"2C",thk:2.0},
+  "LU22CBSM":  {descr:"2C/2A 2C BRN SFT MAPLE", uom:"BF",unitCost:1.5413,type:"LU",specie:"BSM",grade:"2C",thk:2.0},
+  "LU22CROA":  {descr:"2C/2A 2C RED OAK",       uom:"BF",unitCost:1.3688,type:"LU",specie:"ROA",grade:"2C",thk:2.0},
+  "LU22CCHE":  {descr:"2C/2A 2C CHERRY",        uom:"BF",unitCost:2.9563,type:"LU",specie:"CHE",grade:"2C",thk:2.0},
+  "LU22CHIC":  {descr:"2C/2A 2C HICKORY",       uom:"BF",unitCost:2.1375,type:"LU",specie:"HIC",grade:"2C",thk:2.0},
+  "LU22CWAL":  {descr:"2C/2A 2C WALNUT",        uom:"BF",unitCost:5.1388,type:"LU",specie:"WAL",grade:"2C",thk:2.0},
+  "LU22CWOA":  {descr:"2C/2A 2C WHITE OAK",     uom:"BF",unitCost:1.7400,type:"LU",specie:"WOA",grade:"2C",thk:2.0},
+  "LU22CBHM":  {descr:"2C/2A 2C BRN HARD MAPLE",uom:"BF",unitCost:1.9913,type:"LU",specie:"BHM",grade:"2C",thk:2.0},
+};
+
+// ── LUMBER PRICE LOOKUP (by specie + grade, from ICIM data) ─────────────────
+// Returns $/BF for WIP valuation lookups
+function getLumberPrice(specie, grade) {
+  // Search ICIM for matching specie+grade (4/4 base)
+  for (var key in ICIM_PRICES) {
+    var p = ICIM_PRICES[key];
+    if (p.type === 'LU' && p.specie === specie && p.grade === grade && p.thk === 1.0) {
+      return p.unitCost;
+    }
+  }
+  return null;
+}
+function getLumber2CPrice(specie) { 
+  // WHM and WSM use 2A grade, all others use 2C
+  if(specie==='WHM'||specie==='WSM') return getLumberPrice(specie, '2A');
+  return getLumberPrice(specie, '2C'); 
+}
+function getLumberSBPrice(specie)  { return getLumberPrice(specie, 'SB'); }
+
+// ── TYPES & SPECIES DEFINITIONS ──────────────────────────────────────────────
+// WIP Locations - global so dashboard tiles can reference them
+var WIP_LOCATIONS = ['SHIPPING DOCK','WAREHOUSE GS','WAREHOUSE LU','WAREHOUSE MO','WAREHOUSE RS','WIP CHOP 1-6','WIP DOOR','WIP MOULD','WIP PANEL'];
+
+// Two-level type system: 7 Product Type categories → sub-types
+const TYPE_CATEGORIES = [
+  {
+    code:'DOOR', label:'Doors', auto:false,
+    types:[
+      {code:'SFP', label:'Square Flat Panel'},
+      {code:'SRP', label:'Square Raised Panel'},
+      {code:'MFP', label:'Mitered Flat Panel'},
+      {code:'MRP', label:'Mitered Raised Panel'},
+      {code:'SLB', label:'Slab Door'},
+    ]
+  },
+  {
+    code:'GS', label:'Glue Stock', auto:true,
+    types:[
+      {code:'GS', label:'Glue Stock'},
+    ]
+  },
+  {
+    code:'PANEL', label:'Panel', auto:false,
+    types:[
+      {code:'UT',  label:'Untrimmed'},
+      {code:'EQ',  label:'Equalized'},
+      {code:'CTP', label:'Cut to Size Panel'},
+      {code:'RS',  label:'Raised & Shaped'},
+      {code:'DF',  label:'Drawer Front'},
+    ]
+  },
+  {
+    code:'DIMSTOCK', label:'Dimension Stock', auto:false,
+    types:[
+      {code:'DIM', label:'Dimension'},
+      {code:'MD',  label:'Moulded Dimension'},
+      {code:'MDC', label:'Moulded Dimension Cope'},
+    ]
+  },
+  {
+    code:'RIP', label:'Rip Stock', auto:true,
+    types:[
+      {code:'RIP', label:'Rip Stock'},
+    ]
+  },
+  {
+    code:'MO', label:'Moulded Random Length', auto:true,
+    types:[
+      {code:'MO', label:'Moulded Random Length'},
+    ]
+  },
+  {
+    code:'RAW', label:'Raw Material', auto:false,
+    types:[
+      {code:'LU',  label:'Lumber'},
+      {code:'PLY', label:'Plywood Sheet'},
+    ]
+  },
+];
+
+// Flat types array
+const TYPES = TYPE_CATEGORIES.reduce(function(a,c){return a.concat(c.types);}, []);
+
+
+const SPECIES = [
+  'WHM','WSM','BSM','ROA','HIC','CHE','ALD','POP','WAL','BHM','WOA','ASH','GBE','BIR','MDF','HMA','SMA','MIX'
+];
+
+const GRADES = ['SB','1C','2C','CAB','CUS','SUP','PAN','N/A'];
+const GRADE_TYPES = ['LU','RIP','MO','GS','DIM','MD','MDC']; // types that need grade
+
+const THK_PRESETS = [
+  {val:'0.563', frac:'9/16'},
+  {val:'0.625', frac:'5/8'},
+  {val:'0.750', frac:'3/4'},
+  {val:'0.781', frac:'25/32'},
+  {val:'0.813', frac:'13/16'},
+  {val:'0.875', frac:'7/8'},
+  {val:'0.938', frac:'15/16'},
+  {val:'1.000', frac:'1"'},
+  {val:'1.250', frac:'1-1/4"'},
+  {val:'1.500', frac:'1-1/2"'},
+  {val:'2.000', frac:'2"'},
+];
+
+// ── APP STATE ─────────────────────────────────────────────────────────────────
+var CURRENT_USER = null;
+var COACH_ID     = null;
+var IS_SUPERVISOR = false;
+var TAB = 'count'; // supervisor default; counters get 'counting'
+var STATE = defaultState();
+
+function defaultState() {
+  return {
+    sessions:   [],   // inventory sessions [{id,date,label,quarter,notes,status,entries:[]}]
+    activeSessionId: null,
+    activeZone:  '',
+    activeCounter:'',
+    activeLocation:'',
+    yields: {
+      wip2C:      57,   // % — standard WIP 2C yield
+      wipSB:      65,   // % — select & better longer stock
+      wipDoor:   100,   // % — doors at full selling price
+      wipRework:  100,  // % — show full, adjust separately
+      wipPanel:   57,   // % — panels/GS same as 2C
+    },
+    doorSqftPrice: 4.65, // admin-settable avg selling $/sqft
+    lotPrices: {},        // {lotNumber: {price, specie, grade, lockedAt, lockedBy}}
+    zones: [],            // [{name, counter, location}]
+    shareCode: '',
+    companyName: 'Indiana Dimension Inc.',
+  };
+}
+
+function uid() { return Math.random().toString(36).slice(2)+Date.now().toString(36); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt$(n){ return '$'+(parseFloat(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtSF(n){ return (parseFloat(n)||0).toFixed(1)+' SqFt'; }
+function nowISO(){ return new Date().toISOString(); }
+function fmtDateTime(iso){
+  if(!iso) return '';
+  var d = new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+
+         d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+function fmtDate(iso){
+  if(!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+// ── BF CALCULATION ─────────────────────────────────────────────────────────
+function calcBF(thk, width, length, qty, uom) {
+  var t=parseFloat(thk)||0, w=parseFloat(width)||0, l=parseFloat(length)||0, q=parseFloat(qty)||0;
+  if(!w||!l||!q) return 0;
+  // If thickness is under 1", round up to 1 for BF calculation
+  if(t < 1.0) t = 1.0;
+  // BF = (T × W × L) / 144 × qty
+  return (t * w * l / 144) * q;
+}
+
+function calcSqFt(width, length, qty) {
+  return (parseFloat(width)||0) * (parseFloat(length)||0) / 144 * (parseFloat(qty)||0);
+}
+
+// ── VALUATION ENGINE ───────────────────────────────────────────────────────
+// Returns {value, unitCost, method, breakdown}
+function calcValue(entry) {
+  var type    = entry.type || '';
+  var specie  = entry.specie || '';
+  var grade   = entry.grade || '';
+  var thk     = parseFloat(entry.thk) || 0;
+  var width   = parseFloat(entry.width) || 0;
+  var length  = parseFloat(entry.length) || 0;
+  var qty     = parseFloat(entry.qty) || 0;
+  var uom     = entry.uom || 'EACH';
+  var lotNum  = (entry.lotNumber || '').trim();
+
+  // 1. APEX lot number → look up locked price
+  if(lotNum && STATE.lotPrices && STATE.lotPrices[lotNum]) {
+    var locked = STATE.lotPrices[lotNum];
+    var bf = calcBF(thk, width, length, qty, uom);
+    var val = bf * locked.price;
+    return {value:val, unitCost:locked.price, method:'LOT LOCKED', breakdown:'Lot #'+lotNum+' locked @ '+fmt$(locked.price)+'/BF × '+fmtSF(bf)};
+  }
+
+  // 2. LU — raw lumber, NO yield adjustment, straight ICIM price × SqFt
+  if(type === 'LU') {
+    var bf2 = calcBF(thk, width, length, qty, uom);
+    var icimPrice = getLumberPrice(specie, grade) || getLumber2CPrice(specie);
+    if(icimPrice) {
+      var val2 = bf2 * icimPrice;
+      return {value:val2, unitCost:icimPrice, method:'LU STRAIGHT', breakdown:specie+' '+grade+' @ '+fmt$(icimPrice)+'/SqFt × '+fmtSF(bf2)+' (no yield — raw lumber)'};
+    }
+    return {value:0, unitCost:0, method:'NO PRICE', breakdown:'No price found for '+specie+' '+grade};
+  }
+  // PLY — sheet goods at ICIM price
+  if(type === 'PLY') {
+    var bf2 = calcBF(thk, width, length, qty, uom);
+    var icimPrice = getLumberPrice(specie, grade);
+    if(icimPrice) {
+      var val2 = bf2 * icimPrice;
+      return {value:val2, unitCost:icimPrice, method:'PLY ICIM', breakdown:specie+' '+grade+' ICIM @ '+fmt$(icimPrice)+'/SqFt × '+fmtSF(bf2)};
+    }
+  }
+
+  // 3. DOOR types (GS panel ≥84" long with door treatment)
+  // Doors: use admin sqft price at 100% yield
+  // (Handled as special entry type if we ever add DOOR type)
+
+  // 4. WIP GS / panels / moulding / rips → lumber price ÷ yield
+  var bf3 = calcBF(thk, width, length, qty, uom);
+  if(bf3 <= 0) return {value:0, unitCost:0, method:'NO DATA', breakdown:'Cannot calculate — missing dimensions'};
+
+  // Choose SB vs 2C price based on length
+  var useSB = parseFloat(length) >= 84;
+  var lumberPrice = useSB ? getLumberSBPrice(specie) : getLumber2CPrice(specie);
+
+  if(!lumberPrice) {
+    // No price found — return zero with note
+    return {value:0, unitCost:0, method:'NO PRICE', breakdown:'No price found for '+specie+(grade?' '+grade:'')};
+  }
+
+  var yieldPct, yieldKey;
+  if(type === 'GS' || type === 'DIM' || type === 'UT') {
+    yieldPct = (STATE.yields.wipPanel||57)/100;
+    yieldKey = 'Panel/GS Yield '+(STATE.yields.wipPanel||57)+'%';
+  } else if(type === 'RIP' || type === 'RS' || type === 'ARS') {
+    yieldPct = (STATE.yields.wip2C||57)/100;
+    yieldKey = 'Rip Yield '+(STATE.yields.wip2C||57)+'%';
+  } else if(type === 'MD' || type === 'MDC' || type === 'MO') {
+    yieldPct = (STATE.yields.wip2C||57)/100;
+    yieldKey = 'Moulding Yield '+(STATE.yields.wip2C||57)+'%';
+  } else {
+    yieldPct = (STATE.yields.wip2C||57)/100;
+    yieldKey = 'WIP Yield '+(STATE.yields.wip2C||57)+'%';
+  }
+
+  var unitCostCalc = lumberPrice / yieldPct;
+  var totalVal = bf3 * unitCostCalc;
+  var gradeUsed = useSB ? 'SB (≥84")' : '2C';
+
+  return {
+    value: totalVal,
+    unitCost: unitCostCalc,
+    method: useSB ? 'SB+YIELD' : '2C+YIELD',
+    breakdown: specie+' '+gradeUsed+' '+fmt$(lumberPrice)+'/BF ÷ '+yieldKey+' × '+fmtSF(bf3)
+  };
+}
+
+// ── FIREBASE AUTH ──────────────────────────────────────────────────────────
+function signInEmail() {
+  var statusEl = document.getElementById('login-status');
+  var email = (document.getElementById('login-email').value||'').trim();
+  var pass  = document.getElementById('login-pass').value||'';
+  if(!email||!pass){ statusEl.textContent='Enter email and password.'; return; }
+  statusEl.textContent='Signing in...';
+  statusEl.style.color='rgba(255,255,255,0.5)';
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(function(cred){
+      statusEl.textContent='✓ Signed in!';
+    })
+    .catch(function(e){
+      statusEl.textContent='Trying to create account...';
+      auth.createUserWithEmailAndPassword(email, pass)
+        .then(function(cred){
+          statusEl.textContent='✓ Account created!';
+        })
+        .catch(function(e2){
+          if(e2.code==='auth/email-already-in-use'||e2.code==='auth/wrong-password'){
+            statusEl.style.color='#ff8080';
+            statusEl.textContent='⛔ Wrong password. Try again.';
+          } else {
+            statusEl.style.color='#ff8080';
+            statusEl.textContent='⛔ Error: '+e2.code+' — '+e2.message;
+          }
+        });
+    });
+}
+function doSignOut(){if(confirm('Sign out?'))auth.signOut();}
+
+// Coach Code System (mirrors The Turn exactly)
+function generateCode(){
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; var c='';
+  for(var i=0;i<6;i++) c+=chars[Math.floor(Math.random()*chars.length)]; return c;
+}
+function createShareCode(cb){
+  if(!CURRENT_USER) return;
+  var code=generateCode();
+  db.collection('wipCodes').doc(code).set({
+    ownerUid:CURRENT_USER.uid,
+    companyName:STATE.companyName||'IDI',
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){
+    db.collection('wipSupervisors').doc(CURRENT_USER.uid).update({shareCode:code});
+    if(cb) cb(code);
+  }).catch(function(e){console.error(e);if(cb)cb(null);});
+}
+function lookupCode(code,cb){
+  db.collection('wipCodes').doc(code.toUpperCase().trim()).get()
+    .then(function(d){cb(d.exists?d.data():null);})
+    .catch(function(){cb(null);});
+}
+function joinAsCounter(code){
+  var trimmed=code.toUpperCase().trim();
+  document.getElementById('join-status').textContent='Looking up code...';
+  lookupCode(trimmed,function(data){
+    if(!data){document.getElementById('join-status').textContent='⛔ Code not found. Ask your supervisor.';return;}
+    db.collection('wipSupervisors').doc(CURRENT_USER.uid).set({
+      linkedTo:data.ownerUid, companyName:data.companyName||'IDI',
+      isCounter:true, updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function(){
+      COACH_ID=data.ownerUid; IS_SUPERVISOR=false;
+      hideJoinScreen(); showApp();
+      loadFromCloud(function(cs){if(cs){STATE=cs;applyMigrations();}updateAuthBar();renderAll();});
+    });
+  });
+}
+function skipJoinScreen(){
+  var user=CURRENT_USER||auth.currentUser;
+  if(!user){alert('Not signed in yet.');return;}
+  COACH_ID=user.uid; IS_SUPERVISOR=true;
+  hideJoinScreen(); showApp();
+  db.collection('wipSupervisors').doc(user.uid).set(
+    {companyName:'Indiana Dimension Inc.',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+  STATE=defaultState(); applyMigrations();
+  updateAuthBar(); renderAll();
+}
+function hideJoinScreen(){
+  var js=document.getElementById('join-screen'); if(js){js.classList.add('hidden');js.style.display='none';}
+}
+function showApp(){
+  document.getElementById('app').style.display='';
+  document.getElementById('auth-bar').classList.remove('hidden');
+  // Set default tab based on role
+  TAB = IS_SUPERVISOR ? 'count' : 'counting';
+}
+
+// Share code modal
+function showShareCode(){
+  db.collection('wipSupervisors').doc(CURRENT_USER.uid).get().then(function(doc){
+    var code=doc.exists&&doc.data().shareCode;
+    if(code){renderShareCodeModal(code);}
+    else{createShareCode(function(c){if(c)renderShareCodeModal(c);});}
+  });
+}
+function renderShareCodeModal(code){
+  document.getElementById('share-code-display').textContent=code;
+  openModal('share-code-modal');
+}
+function copyShareCode(){
+  var code=document.getElementById('share-code-display').textContent;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(code).then(function(){
+      var btn=document.getElementById('copy-code-btn');
+      if(btn){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy Code';},2000);}
+    });
+  }
+}
+
+// ── CLOUD SYNC ──────────────────────────────────────────────────────────────
+var _saveTimer=null;
+function setSyncDot(s){
+  var d=document.getElementById('sync-dot');if(!d)return;
+  d.className=s==='syncing'?'syncing':s==='error'?'error':'';
+}
+function saveToCloud(){
+  if(!COACH_ID) return;
+  setSyncDot('syncing');
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(function(){
+    db.collection('wipSupervisors').doc(COACH_ID).set({
+      state:JSON.stringify(STATE),
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+      companyName:STATE.companyName||'IDI'
+    }).then(function(){setSyncDot('ok');})
+    .catch(function(e){console.error(e);setSyncDot('error');});
+  },600);
+}
+function loadFromCloud(cb){
+  if(!COACH_ID){cb(null);return;}
+  db.collection('wipSupervisors').doc(COACH_ID).get().then(function(doc){
+    if(doc.exists&&doc.data().state){
+      try{var s=JSON.parse(doc.data().state);if(s&&typeof s==='object'){cb(s);return;}}catch(e){}
+    }
+    cb(null);
+  }).catch(function(){cb(null);});
+}
+function save(){
+  try{localStorage.setItem('idi_wip_v1',JSON.stringify(STATE));}catch(e){}
+  saveToCloud();
+}
+
+function applyMigrations(){
+  if(!STATE.sessions) STATE.sessions=[];
+  if(!STATE.yields) STATE.yields={wip2C:57,wipSB:65,wipDoor:100,wipRework:100,wipPanel:57};
+  if(!STATE.yields.wipSB) STATE.yields.wipSB=65;
+  if(!STATE.yields.wipPanel) STATE.yields.wipPanel=57;
+  if(!STATE.doorSqftPrice) STATE.doorSqftPrice=4.65;
+  if(!STATE.lotPrices) STATE.lotPrices={};
+  if(!STATE.zones) STATE.zones=[];
+  if(!STATE.companyName) STATE.companyName='Indiana Dimension Inc.';
+  if(!STATE.completedLocations) STATE.completedLocations={};
+  if(!STATE.apexLots) STATE.apexLots=[];
+  if(!STATE.dockItems) STATE.dockItems=[];
+}
+
+// ── AUTH STATE LISTENER ────────────────────────────────────────────────────
+// ── FIREBASE AUTH STATE LISTENER ─────────────────────────────────────────────
+auth.onAuthStateChanged(function(user){
+  var loginScreen = document.getElementById('login-screen');
+  if(user){
+    CURRENT_USER=user;
+    // Hide login screen immediately
+    if(loginScreen) loginScreen.classList.add('hidden');
+    // Try to load supervisor doc - if Firestore rules block it, still show app
+    db.collection('wipSupervisors').doc(user.uid).get()
+      .then(function(doc){
+        var linkedTo=doc.exists&&doc.data()&&doc.data().linkedTo;
+        if(linkedTo){COACH_ID=linkedTo;IS_SUPERVISOR=false;}
+        else{COACH_ID=user.uid;IS_SUPERVISOR=true;}
+        if(!doc.exists){
+          // New user - show join screen
+          var js=document.getElementById('join-screen');
+          if(js){js.classList.remove('hidden');js.style.display='flex';}
+          return;
+        }
+        var js=document.getElementById('join-screen');
+        if(js){js.classList.add('hidden');js.style.display='none';}
+        showApp();
+        loadFromCloud(function(cs){
+          if(cs){STATE=cs;}
+          else{try{var r=localStorage.getItem('idi_wip_v1');if(r)STATE=JSON.parse(r);}catch(e){}}
+          applyMigrations();
+          updateAuthBar();
+          renderNav();
+          renderAll();
+          renderHeaderMeta();
+        });
+      })
+      .catch(function(err){
+        // Firestore blocked - still show app in local mode
+        console.warn('Firestore error:', err.message);
+        COACH_ID=user.uid; IS_SUPERVISOR=true;
+        var js=document.getElementById('join-screen');
+        if(js){js.classList.add('hidden');js.style.display='none';}
+        showApp();
+        try{var r=localStorage.getItem('idi_wip_v1');if(r)STATE=JSON.parse(r);}catch(e){}
+        applyMigrations();
+        updateAuthBar();
+        renderNav();
+        renderAll();
+        renderHeaderMeta();
+        showToast('⚠️ Cloud sync limited — check Firestore rules');
+      });
+  } else {
+    CURRENT_USER=null; COACH_ID=null;
+    if(loginScreen) loginScreen.classList.remove('hidden');
+    document.getElementById('app').style.display='none';
+    document.getElementById('auth-bar').classList.add('hidden');
+  }
+});
+
+function updateAuthBar(){
+  var nameEl=document.getElementById('auth-user-name');
+  var roleEl=document.getElementById('auth-user-role');
+  var shareBtn=document.getElementById('share-code-btn');
+  if(!nameEl||!CURRENT_USER) return;
+  nameEl.textContent=CURRENT_USER.displayName||CURRENT_USER.email||'User';
+  roleEl.textContent=IS_SUPERVISOR?'Supervisor — '+STATE.companyName:'Counter (linked to supervisor)';
+  if(shareBtn) shareBtn.style.display=IS_SUPERVISOR?'':'none';
+}
+
+// ── MODAL HELPERS ──────────────────────────────────────────────────────────
+function openModal(id){var el=document.getElementById(id);if(el)el.classList.add('open');}
+function closeModal(id){var el=document.getElementById(id);if(el)el.classList.remove('open');}
+
+// ── TOAST ───────────────────────────────────────────────────────────────────
+var _toastTimer=null;
+function showToast(msg,dur){
+  var t=document.getElementById('toast'),m=document.getElementById('toast-msg');
+  if(!t||!m)return; m.textContent=msg; t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(function(){t.classList.remove('show');},dur||2500);
+}
+
+// ── TAB ROUTING ────────────────────────────────────────────────────────────
+function setTab(t){
+  TAB=t;
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  // Map tab IDs to screen IDs
+  var screenMap = {
+    'count':     'count',
+    'counting':  'counting',
+    'sessions':  'sessions',
+    'history':   'history',
+    'valuation': 'valuation',
+    'lots':      'lots',
+    'settings':  'settings',
+    'help':      'help',
+    'myentries': 'myentries',
+    'import':    'import',
+  };
+  var scrId = screenMap[t]||t;
+  var scr = document.getElementById('screen-'+scrId);
+  if(scr) scr.classList.add('active');
+  renderNav();
+  renderTab(t);
+}
+
+function renderAll(){
+  renderNav();
+  renderTab(TAB||(IS_SUPERVISOR?'count':'counting'));
+}
+
+function renderTab(t){
+  switch(t){
+    case 'count':      renderCount();      break;
+    case 'counting':   renderCounting();   break;
+    case 'sessions':   renderSessions();   break;
+    case 'history':    renderHistory();    break;
+    case 'valuation':  renderValuation();  break;
+    case 'lots':       renderLots();       break;
+    case 'settings':   renderSettings2();  break;
+    case 'help':       renderHelp2();      break;
+    case 'myentries':  renderMyEntries();  break;
+    case 'import':     renderImport();     break;
+  }
+}
+
+// ── GET ACTIVE SESSION ──────────────────────────────────────────────────────
+function getActiveSession(){
+  if(!STATE.activeSessionId) return null;
+  return STATE.sessions.find(function(s){return s.id===STATE.activeSessionId;})||null;
+}
+function getSessionEntries(sess){
+  if(!sess) return [];
+  return (sess.entries||[]).filter(function(e){
+    // Filter to this zone/counter if set
+    if(STATE.activeZone && e.zone !== STATE.activeZone) return true; // show all if no zone filter
+    return true;
+  });
+}
+function getMyEntries(sess){
+  if(!sess) return [];
+  return (sess.entries||[]).filter(function(e){ return e.zone===STATE.activeZone; });
+}
+
+// ── COUNT TAB ───────────────────────────────────────────────────────────────
+function renderCount(){
+  var sess = getActiveSession();
+  var banner = document.getElementById('count-session-banner');
+  var dash   = document.getElementById('count-dashboard');
+  var list   = document.getElementById('count-entry-list');
+  if(!banner||!dash||!list) return;
+
+  if(!sess){
+    banner.innerHTML='';
+    dash.innerHTML='<div style="text-align:center;padding:48px 16px">'+
+      '<div style="font-size:48px;margin-bottom:12px">📋</div>'+
+      '<div style="font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--navy);letter-spacing:2px;margin-bottom:8px">NO ACTIVE SESSION</div>'+
+      '<div style="font-size:14px;color:var(--gray-400);margin-bottom:24px">Create a new inventory session to begin counting.</div>'+
+      '<button class="btn btn-gold btn-lg" onclick="setTab(\'sessions\')">📅 Go to Sessions</button>'+
+    '</div>';
+    list.innerHTML=''; return;
+  }
+
+  var entries = sess.entries||[];
+  var myEntries = STATE.activeZone ? entries.filter(function(e){return e.zone===STATE.activeZone;}) : entries;
+  var totalBF   = myEntries.reduce(function(a,e){return a+calcBF(e.thk,e.width,e.length,e.qty,e.uom);},0);
+  var totalVal  = myEntries.reduce(function(a,e){return a+calcValue(e).value;},0);
+  var allBF     = entries.reduce(function(a,e){return a+calcBF(e.thk,e.width,e.length,e.qty,e.uom);},0);
+  var allVal    = entries.reduce(function(a,e){return a+calcValue(e).value;},0);
+
+  // Zone header
+  var zoneInfo = STATE.activeZone ?
+    '<div class="zone-name">'+esc(STATE.activeZone)+'</div>'+
+    '<div class="zone-counter">📍 '+esc(STATE.activeLocation||'')+(STATE.activeCounter?' · 👤 '+esc(STATE.activeCounter):'')+'</div>' :
+    '<div class="zone-name" style="font-size:16px">All Zones</div>';
+
+  banner.innerHTML='<div class="zone-header">'+
+    '<div class="zone-info"><div>'+zoneInfo+'</div></div>'+
+    '<div class="zone-stats">'+
+      '<div class="zone-stat"><div class="zone-stat-val">'+myEntries.length+'</div><div class="zone-stat-lbl">Entries</div></div>'+
+      '<div class="zone-stat"><div class="zone-stat-val">'+totalBF.toFixed(0)+'</div><div class="zone-stat-lbl">My SqFt</div></div>'+
+      '<div class="zone-stat"><div class="zone-stat-val" style="color:var(--accent)">'+fmt$(totalVal)+'</div><div class="zone-stat-lbl">My Value</div></div>'+
+      (STATE.activeZone&&entries.length>myEntries.length?'<div class="zone-stat"><div class="zone-stat-val" style="font-size:16px;color:rgba(255,255,255,0.4)">'+entries.length+'</div><div class="zone-stat-lbl">All Entries</div></div>':'')
+    +'</div>'+
+  '</div>';
+
+  // WIP Location summary dashboard
+  var locationMap = {};
+  entries.forEach(function(e){
+    var loc = e.location||e.zone||'Unknown';
+    if(!locationMap[loc]) locationMap[loc]={entries:0,bf:0,val:0,counters:{},pallets:0};
+    locationMap[loc].entries++;
+    locationMap[loc].bf += calcBF(e.thk,e.width,e.length,e.qty,e.uom);
+    locationMap[loc].val += calcValue(e).value;
+    locationMap[loc].pallets += (e.pallets||0);
+    if(e.counter) locationMap[loc].counters[e.counter]=true;
+  });
+
+  // WIP_LOCATIONS is global
+
+  // Build dashboard as a table-style grid using a div with inline styles
+  var mapHtml = '<div style="margin-bottom:14px">';
+  mapHtml += '<div style="font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:2px;margin-bottom:8px">'+t('wipDashboard')+'</div>';
+  mapHtml += '<div style="display:flex;flex-wrap:wrap;gap:8px">';
+  for(var wi=0; wi<WIP_LOCATIONS.length; wi++){
+    var loc = WIP_LOCATIONS[wi];
+    var d = locationMap[loc];
+    var isActive = STATE.activeLocation === loc;
+    var hasData = d && d.entries > 0;
+    var isDone = STATE.completedLocations && STATE.completedLocations[loc];
+    var bg = isActive ? '#14304e' : (isDone ? '#f0faf4' : '#fff');
+    var border = isActive ? '#5a8fb5' : (isDone ? '#1a7a40' : (hasData ? '#c8a040' : '#e0e4ea'));
+    var nameCol = isActive ? '#5a8fb5' : (hasData ? '#14304e' : '#9aa5b4');
+    var subCol = isActive ? 'rgba(255,255,255,0.5)' : '#9aa5b4';
+    var valCol = isActive ? '#4dcc80' : '#1a7a40';
+    mapHtml += '<button onclick="quickSwitchLocation(WIP_LOCATIONS[' + wi + '])" style="';
+    mapHtml += 'background:' + bg + ';border:2px solid ' + border + ';border-radius:10px;';
+    mapHtml += 'padding:10px 14px;cursor:pointer;text-align:left;min-width:140px;flex:1;';
+    mapHtml += 'font-family:inherit;transition:all 0.15s">';
+    mapHtml += '<div style="font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:800;color:' + nameCol + ';letter-spacing:1px;margin-bottom:4px">' + loc + '</div>';
+    if(hasData){
+      mapHtml += '<div style="font-size:16px;font-family:Barlow Condensed,sans-serif;font-weight:700;color:' + valCol + '">' + fmt$(d.val) + '</div>';
+      mapHtml += '<div style="font-size:10px;color:' + subCol + ';margin-top:2px">' + d.bf.toFixed(0) + ' SqFt &middot; ' + d.entries + ' entries</div>';
+      if(d.pallets) mapHtml += '<div style="font-size:10px;color:' + subCol + '">' + d.pallets + ' pallets</div>';
+      var cnames = Object.keys(d.counters);
+      if(cnames.length) mapHtml += '<div style="font-size:9px;color:#5a8fb5;margin-top:3px">&#128100; ' + cnames.join(', ') + '</div>';
+    } else {
+      mapHtml += '<div style="font-size:11px;color:#e0e4ea;margin-top:4px">'+t('noEntriesShort')+'</div>';
+    }
+    mapHtml += '</button>';
+  }
+  mapHtml += '</div></div>';
+  dash.innerHTML = mapHtml;
+
+  // Then append action bar below map
+  dash.innerHTML += '<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">'+
+    '<button class="btn btn-gold btn-lg" onclick="openCountModal()" style="flex:1;min-width:180px">'+t('newEntry')+'</button>'+
+    (IS_SUPERVISOR?'<button class="btn btn-primary" onclick="openZoneModal()">⚙️ Change Zone</button>':'<button class="btn btn-ghost" onclick="openZoneModal()">👤 My Zone</button>')+
+    '</div>'+
+    '<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">'+
+    '<span style="font-size:11px;color:var(--gray-400);align-self:center">Filter:</span>'+
+    '<button class="btn btn-ghost btn-sm '+(window._countFilter==='all'||!window._countFilter?' '+(IS_SUPERVISOR?'btn-primary':'btn-primary'):'')+'" onclick="setCountFilter(\'all\')">All '+(STATE.activeZone?'Zones':'')+'</button>'+
+    (STATE.activeZone?'<button class="btn btn-ghost btn-sm" onclick="setCountFilter(\'mine\')">My Zone ('+myEntries.length+')</button>':'')+
+    '</div>';
+
+  var showAll   = !window._countFilter||window._countFilter==='all';
+  var dispEntries = showAll ? entries : myEntries;
+
+  if(!dispEntries.length){
+    list.innerHTML='<div style="text-align:center;padding:32px;color:var(--gray-400);font-size:14px">No entries yet. Tap <b>+ New Entry</b> to start counting.</div>';
+    return;
+  }
+
+  // Sort newest first
+  var sorted = dispEntries.slice().sort(function(a,b){return new Date(b.createdAt||0)-new Date(a.createdAt||0);});
+
+  var html='<div class="entry-list">';
+  sorted.forEach(function(e){
+    var bf=calcBF(e.thk,e.width,e.length,e.qty,e.uom);
+    var val=calcValue(e);
+    var reworkPill=e.rework?'<span class="entry-pill pill-rework">REWORK</span>':'';
+    var orderPill=e.orderYN==='Y'?'<span class="entry-pill" style="background:#fff0c0;color:#8a6000">ORDER</span>':'';
+    var zoneTag=showAll?'<span class="entry-pill" style="background:var(--steel-pale);color:var(--steel)">'+esc(e.zone||'?')+'</span>':'';
+    var valPill=val.value>0?'<span class="entry-pill pill-val">'+fmt$(val.value)+'</span>':'';
+    var bfPill=bf>0?'<span class="entry-pill pill-bf">'+fmtSF(bf)+'</span>':'';
+    var dims=e.thk+'" × '+e.width+'" × '+e.length+'" · '+e.qty+' '+e.uom+(e.specie?' · '+e.specie:'')+(e.grade&&e.grade!=='N/A'?' '+e.grade:'');
+    html+='<div class="entry-card">'+
+      '<div class="entry-type-badge">'+esc(e.type||'?')+'</div>'+
+      '<div class="entry-details">'+
+        '<div class="entry-main">'+esc(e.type)+(e.specie?' · '+e.specie:'')+(e.grade&&e.grade!=='N/A'?' '+e.grade:'')+'</div>'+
+        '<div class="entry-dims">'+esc(dims)+'</div>'+
+        (e.notes?'<div style="font-size:11px;color:var(--gray-400);margin-top:3px;font-style:italic">'+esc(e.notes)+'</div>':'')+
+        (e.lotNumber?'<div style="font-size:10px;color:var(--steel);margin-top:2px">Lot #'+esc(e.lotNumber)+'</div>':'')+
+        '<div class="entry-meta">'+bfPill+valPill+reworkPill+orderPill+zoneTag+
+          (val.method?'<span style="font-size:9px;color:var(--gray-400);letter-spacing:1px;padding:2px 5px">'+val.method+'</span>':'')+
+        '</div>'+
+        '<div class="entry-timestamp">'+fmtDateTime(e.createdAt)+(e.counter?' · '+esc(e.counter):'')+(e.pallets?' · '+(e.pallets||0)+' pallet'+((e.pallets||0)!==1?'s':''):'')+'</div>'+
+      '</div>'+
+      '<div class="entry-actions">'+
+        '<button class="rm-btn-e" onclick="deleteEntry(\''+e.id+'\')" title="Delete">🗑</button>'+
+      '</div>'+
+    '</div>';
+  });
+  html+='</div>';
+  list.innerHTML=html;
+}
+
+function setCountFilter(f){ window._countFilter=f; renderCount(); }
+
+function quickSwitchLocation(loc){
+  STATE.activeLocation = loc;
+  STATE.activeZone = loc;
+  // If no counter name set yet, ask for it simply
+  if(!STATE.activeCounter){
+    var name = prompt('Your name?');
+    if(name && name.trim()) STATE.activeCounter = name.trim();
+  }
+  save();
+  renderCount();
+  showToast('📍 ' + loc + (STATE.activeCounter ? ' · ' + STATE.activeCounter : ''));
+}
+
+function deleteEntry(eid){
+  if(!confirm('Delete this entry?')) return;
+  var sess=getActiveSession(); if(!sess) return;
+  sess.entries=(sess.entries||[]).filter(function(e){return e.id!==eid;});
+  save(); renderCount();
+  showToast('Entry deleted');
+}
+
+// ── ZONE SETUP ──────────────────────────────────────────────────────────────
+function openZoneModal(){
+  var locEl = document.getElementById('zm-location');
+  var ctrEl = document.getElementById('zm-counter');
+  if(locEl) locEl.value = STATE.activeLocation||'';
+  if(ctrEl) ctrEl.value = STATE.activeCounter||'';
+  // Update labels for current language
+  var titleEl = document.getElementById('zm-title-text');
+  var locLbl  = document.getElementById('zm-loc-label');
+  var nameLbl = document.getElementById('zm-name-label');
+  var saveBtn = document.getElementById('zm-save-btn');
+  if(titleEl) titleEl.textContent = t('yourWipLocation');
+  if(locLbl)  locLbl.textContent  = t('wipLocation');
+  if(nameLbl) nameLbl.textContent = t('yourName');
+  if(saveBtn) saveBtn.textContent = t('startCounting');
+  if(ctrEl)   ctrEl.placeholder   = t('namePlaceholder');
+  openModal('zone-modal');
+}
+function saveZoneSetup(){
+  var loc = document.getElementById('zm-location').value.trim();
+  var ctr = document.getElementById('zm-counter').value.trim();
+  if(!loc){showToast('Select a WIP Location');return;}
+  if(!ctr){showToast('Enter your name');return;}
+  STATE.activeLocation = loc;
+  STATE.activeCounter  = ctr;
+  STATE.activeZone     = loc; // zone = location for grouping
+  closeModal('zone-modal');
+  save(); renderCount();
+  showToast('Ready to count · '+loc+' · '+ctr);
+}
+
+// ── COUNTING MODAL STATE ─────────────────────────────────────────────────────
+var CM = {};
+var CM_STEPS = []; // dynamic based on type
+
+function buildSteps(type){
+  var steps = ['TYPE','SPECIE'];
+  if(GRADE_TYPES.indexOf(type)>=0) steps.push('GRADE');
+  steps.push('THICKNESS','WIDTH','LENGTH','UOM_QTY','PALLETS','REVIEW');
+  return steps;
+}
+
+function openCountModal(){
+  var sess=getActiveSession();
+  if(!sess){
+    if(confirm('No active session. Create one now?')){
+      var today=new Date();
+      var dateStr=today.toISOString().slice(0,10);
+      var s={id:uid(),date:dateStr,label:'Inventory '+dateStr,quarter:'',notes:'',status:'active',entries:[],createdAt:nowISO()};
+      STATE.sessions.push(s);
+      STATE.activeSessionId=s.id;
+      save();
+    } else { return; }
+  }
+  if(!STATE.activeLocation){
+    // No location set — open modal
+    openZoneModal(); return;
+  }
+  if(!STATE.activeCounter){
+    var name = prompt('Your name?');
+    if(!name||!name.trim()){ showToast('Enter your name to continue'); return; }
+    STATE.activeCounter = name.trim();
+    save();
+  }
+  CM={type:'',specie:'',grade:'',thk:'',width:'',length:'',qty:'',uom:'EACH',pallets:1,rework:false,orderYN:'N',notes:'',lotNumber:''};
+  _palStr='1';
+  _selectedCategory=null;
+  _selectedCategory=null;
+  CM_STEPS=buildSteps('');
+  window._cmStep=0;
+  renderCountStep();
+  document.getElementById('count-modal').classList.add('open');
+}
+
+function cancelEntry(){
+  if(window._cmStep > 2){
+    if(!confirm('Cancel this entry? Your progress will be lost.')) return;
+  }
+  CM={type:'',specie:'',grade:'',thk:'',width:'',length:'',qty:'',uom:'EACH',pallets:1,rework:false,orderYN:'N',notes:'',lotNumber:''};
+  _selectedCategory=null;
+  closeCountModal();
+}
+function closeCountModal(){
+  document.getElementById('count-modal').classList.remove('open');
+}
+
+function renderCountStep(){
+  var step = CM_STEPS[window._cmStep]||'TYPE';
+  var total = CM_STEPS.length;
+  var idx   = window._cmStep;
+  var pct   = Math.round(idx/total*100);
+
+  document.getElementById('count-progress-fill').style.width=pct+'%';
+  document.getElementById('count-step-label').textContent='STEP '+(idx+1)+' OF '+total+' · '+step;
+
+  var body = document.getElementById('count-modal-body');
+  var footer = document.getElementById('count-modal-footer');
+
+  var backBtn=(idx>0)?'<button class="btn btn-ghost" onclick="cmBack()">← Back</button>':'<button class="btn btn-ghost" onclick="closeCountModal()">✕ Cancel</button>';
+
+  switch(step){
+    case 'TYPE':     body.innerHTML=renderTypeStep(); footer.innerHTML=backBtn; break;
+    case 'SPECIE':   body.innerHTML=renderSpecieStep(); footer.innerHTML=backBtn; break;
+    case 'GRADE':    body.innerHTML=renderGradeStep(); footer.innerHTML=backBtn; break;
+    case 'THICKNESS':body.innerHTML=renderThkStep(); footer.innerHTML=backBtn; break;
+    case 'WIDTH':    body.innerHTML=renderNumStep('WIDTH','Width (inches)','Width in inches — measure actual'); footer.innerHTML=backBtn+'<button class="btn btn-gold" onclick="cmNumNext(\'WIDTH\')">Next →</button>'; break;
+    case 'LENGTH': {
+      var useFeet = ['RIP','MO','LU'].indexOf(CM.type) >= 0;
+      var lenTitle = useFeet ? 'LENGTH (FEET)' : 'LENGTH (INCHES)';
+      var lenHint  = useFeet ? 'ESTIMATE BUNDLE LENGTH IN FEET' : 'MEASURE ACTUAL LENGTH IN INCHES';
+      body.innerHTML = renderNumStep('LENGTH', lenTitle, lenHint, useFeet);
+      footer.innerHTML = backBtn+'<button class="btn btn-gold" onclick="cmNumNext(\'LENGTH\')">Next →</button>';
+      break;
+    }
+    case 'UOM_QTY':  body.innerHTML=renderUOMStep(); footer.innerHTML=backBtn+'<button class="btn btn-gold" onclick="cmNextStep()">Next →</button>'; break;
+    case 'PALLETS':  body.innerHTML=renderPalletsStep(); footer.innerHTML=backBtn+'<button class="btn btn-gold" onclick="cmNextStep()">Review →</button>'; break;
+    case 'REVIEW':   body.innerHTML=renderReviewStep(); footer.innerHTML=backBtn+'<button class="btn btn-green btn-lg" onclick="saveEntry()">'+t('saveEntry')+'</button>'; break;
+  }
+}
+
+function cmBack(){
+  if(window._cmStep>0){ window._cmStep--; renderCountStep(); }
+  else closeCountModal();
+}
+function cmNextStep(){
+  if(window._cmStep<CM_STEPS.length-1){ window._cmStep++; renderCountStep(); }
+}
+
+// TYPE STEP
+function renderTypeStep(){
+  if(_selectedCategory === null){
+    // Screen 1: 7 product categories
+    var html = '<div class="step-title">PRODUCT TYPE</div>';
+    html += '<div class="step-hint">SELECT THE PRODUCT CATEGORY</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">';
+    TYPE_CATEGORIES.forEach(function(cat, idx){
+      var isDoor = cat.code === 'DOOR';
+      var isSelected = CM.type && cat.types.some(function(tp){return tp.code===CM.type;});
+      html += '<button style="background:'+(isSelected?'var(--navy)':(isDoor?'rgba(200,40,30,0.15)':'rgba(255,255,255,0.06)'))+';';
+      html += 'border:2px solid '+(isSelected?'var(--accent)':(isDoor?'#c8281e':'rgba(255,255,255,0.15)'))+';';
+      html += 'border-radius:12px;padding:18px 12px;cursor:pointer;text-align:center;font-family:inherit;width:100%" ';
+      html += 'onclick="selectCategory('+idx+')">';
+      html += '<div style="font-family:var(--font-head);font-size:20px;font-weight:800;color:'+(isDoor?'#ff8080':'#fff')+';letter-spacing:1px;margin-bottom:4px">'+(isDoor?'🚪 ':'')+cat.label.toUpperCase()+'</div>';
+      if(!cat.auto){
+        html += '<div style="font-size:10px;color:rgba(255,255,255,0.3)">'+cat.types.map(function(tp){return tp.code;}).join(' · ')+'</div>';
+      }
+      html += '</button>';
+    });
+    html += '</div>';
+    return html;
+  } else {
+    // Screen 2: sub-types for selected category
+    var cat = TYPE_CATEGORIES[_selectedCategory];
+    if(!cat) return '';
+    var html = '<div class="step-title">'+cat.label.toUpperCase()+'</div>';
+    html += '<div class="step-hint">SELECT TYPE</div>';
+    html += '<button style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 16px;cursor:pointer;color:rgba(255,255,255,0.5);font-family:var(--font-head);font-size:13px;margin-bottom:16px" onclick="_selectedCategory=null;renderCountStep()">← Back to Categories</button>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+    cat.types.forEach(function(tp, idx){
+      var isSelected = CM.type === tp.code;
+      html += '<button style="background:'+(isSelected?'var(--navy)':'rgba(255,255,255,0.06)')+';';
+      html += 'border:2px solid '+(isSelected?'var(--accent)':'rgba(255,255,255,0.15)')+';';
+      html += 'border-radius:12px;padding:20px 12px;cursor:pointer;text-align:center;font-family:inherit;width:100%" ';
+      html += 'onclick="selectTypeByIndex('+_selectedCategory+','+idx+')">';
+      html += '<div style="font-family:var(--font-head);font-size:24px;font-weight:800;color:'+(isSelected?'var(--accent)':'#fff')+';letter-spacing:2px">'+tp.code+'</div>';
+      html += '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px">'+tp.label+'</div>';
+      html += '</button>';
+    });
+    html += '</div>';
+    return html;
+  }
+}
+function selectType(code){
+  CM.type=code;
+  CM.grade=(GRADE_TYPES.indexOf(code)>=0)?'':'N/A';
+  CM_STEPS=buildSteps(code);
+  window._cmStep=1;
+  renderCountStep();
+}
+
+// SPECIE STEP
+function renderSpecieStep(){
+  return '<div class="step-title">'+t("step_SPECIE")+'</div>'+
+    '<div class="step-hint">'+t("step_SPECIE_hint")+'</div>'+
+    '<div class="type-grid">'+
+    SPECIES.map(function(s){
+      return '<div class="type-btn'+(CM.specie===s?' selected':'')+'" onclick="selectSpecie(\''+s+'\')">'+
+        '<span class="type-code">'+s+'</span></div>';
+    }).join('')+'</div>';
+}
+function selectSpecie(s){ CM.specie=s; cmNextStep(); }
+
+// GRADE STEP
+function renderGradeStep(){
+  return '<div class="step-title">'+t("step_GRADE")+'</div>'+
+    '<div class="step-hint">'+t("step_GRADE_hint")+'</div>'+
+    '<div class="type-grid">'+
+    GRADES.map(function(g){
+      return '<div class="type-btn'+(CM.grade===g?' selected':'')+'" onclick="selectGrade(\''+g+'\')">'+
+        '<span class="type-code">'+g+'</span></div>';
+    }).join('')+'</div>';
+}
+function selectGrade(g){ CM.grade=g; cmNextStep(); }
+
+// THICKNESS STEP
+function renderThkStep(){
+  return '<div class="step-title">THICKNESS</div>'+
+    '<div class="step-hint">SELECT OR ENTER IN INCHES</div>'+
+    '<div class="thk-grid">'+
+    THK_PRESETS.map(function(t){
+      return '<div class="thk-btn'+(CM.thk===t.val?' selected':'')+'" onclick="selectThk(\''+t.val+'\')">'+
+        '<span class="thk-val">'+t.val+'"</span><span class="thk-frac">'+t.frac+'</span></div>';
+    }).join('')+
+    '</div>'+
+    '<div style="margin-top:12px"><div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:6px">OR ENTER MANUALLY:</div>'+
+    '<input id="thk-manual" type="number" step="0.001" min="0.1" max="6" value="'+CM.thk+'" '+
+    'placeholder="e.g. 0.750" style="width:100%;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;font-family:var(--font-head);font-size:24px;padding:12px;text-align:center;outline:none">'+
+    '<button class="btn btn-gold" style="width:100%;margin-top:10px" onclick="selectThkManual()">Use Manual →</button></div>';
+}
+function selectThk(v){ CM.thk=v; cmNextStep(); }
+function selectThkManual(){
+  var v=document.getElementById('thk-manual').value.trim();
+  if(!v||parseFloat(v)<=0){showToast('Enter a valid thickness');return;}
+  CM.thk=v; cmNextStep();
+}
+
+// NUMPAD STEP (WIDTH, LENGTH)
+var _numpadVal='';
+function renderNumStep(field, title, hint, useFeet){
+  _numpadVal = (field==='WIDTH'?CM.width:CM.length)||'';
+  // If feet mode and value stored in inches, convert back for display
+  var dispVal = _numpadVal;
+  if(useFeet && dispVal) dispVal = (parseFloat(dispVal)/12).toFixed(2).replace(/\.00$/,'');
+  window._numpadFeet = useFeet||false;
+  return '<div class="step-title">'+title.toUpperCase()+'</div>'+
+    '<div class="step-hint">'+hint.toUpperCase()+'</div>'+
+    '<div class="numpad-display">'+
+      '<div class="numpad-value" id="npd-val">'+(dispVal||'—')+'</div>'+
+      '<div class="numpad-unit">'+(useFeet?t('feet'):t('inches'))+'</div>'+
+    '</div>'+
+    '<div class="numpad-grid">'+
+    [7,8,9,4,5,6,1,2,3].map(function(n){
+      return '<div class="numpad-key" onclick="npKey(\''+n+'\')">'+n+'</div>';
+    }).join('')+
+    '<div class="numpad-key decimal" onclick="npKey(\'.\')">.</div>'+
+    '<div class="numpad-key zero" onclick="npKey(\'0\')">0</div>'+
+    '<div class="numpad-key backspace" onclick="npBack()">⌫</div>'+
+    '</div>';
+}
+function npKey(k){
+  if(k==='.'&&_numpadVal.includes('.')) return;
+  if(_numpadVal==='0'&&k!=='.') _numpadVal=k;
+  else _numpadVal+=k;
+  var el=document.getElementById('npd-val');
+  if(el) el.textContent=_numpadVal||'—';
+}
+function npBack(){
+  _numpadVal=_numpadVal.slice(0,-1);
+  var el=document.getElementById('npd-val');
+  if(el) el.textContent=_numpadVal||'—';
+}
+function cmNumNext(field){
+  if(!_numpadVal||parseFloat(_numpadVal)<=0){showToast(t('enterLength'));return;}
+  var val = _numpadVal;
+  // If feet mode, convert to inches for storage
+  if(field==='LENGTH' && window._numpadFeet){
+    val = (parseFloat(val)*12).toFixed(2);
+  }
+  if(field==='WIDTH') CM.width=val;
+  else if(field==='LENGTH') CM.length=val;
+  cmNextStep();
+}
+
+// UOM + QTY STEP
+function renderUOMStep(){
+  return '<div class="step-title">'+t("step_UOM_QTY")+'</div>'+
+    '<div class="step-hint">'+t("step_UOM_QTY_hint")+'</div>'+
+    '<div class="uom-toggle">'+
+      '<div class="uom-btn'+(CM.uom==='EACH'?' selected':'')+'" onclick="selectUOM(\'EACH\')">'+
+        '<span class="uom-label">EACH</span><span class="uom-sub">Count individual pieces</span></div>'+
+      '<div class="uom-btn'+(CM.uom==='ROWS'?' selected':'')+'" onclick="selectUOM(\'ROWS\')">'+
+        '<span class="uom-label">ROWS</span><span class="uom-sub">Count by rows</span></div>'+
+    '</div>'+
+    '<div class="numpad-display">'+
+      '<div class="numpad-value" id="npd-qty-val">'+(CM.qty||'—')+'</div>'+
+      '<div class="numpad-unit" id="npd-qty-unit">'+CM.uom+'</div>'+
+    '</div>'+
+    '<div class="numpad-grid">'+
+    [7,8,9,4,5,6,1,2,3].map(function(n){
+      return '<div class="numpad-key" onclick="qtyKey(\''+n+'\')">'+n+'</div>';
+    }).join('')+
+    '<div class="numpad-key decimal" onclick="qtyKey(\'.\')">.</div>'+
+    '<div class="numpad-key zero" onclick="qtyKey(\'0\')">0</div>'+
+    '<div class="numpad-key backspace" onclick="qtyBack()">⌫</div>'+
+    '</div>';
+}
+function selectUOM(u){
+  CM.uom=u;
+  var el=document.getElementById('npd-qty-unit'); if(el)el.textContent=u;
+  document.querySelectorAll('.uom-btn').forEach(function(b){b.classList.remove('selected');});
+  var btns=document.querySelectorAll('.uom-btn'); if(u==='EACH'&&btns[0])btns[0].classList.add('selected'); if(u==='ROWS'&&btns[1])btns[1].classList.add('selected');
+}
+function qtyKey(k){
+  if(k==='.'&&(CM.qty||'').includes('.')) return;
+  CM.qty=((CM.qty||'')==='')?k:(CM.qty+k);
+  var el=document.getElementById('npd-qty-val');if(el)el.textContent=CM.qty||'—';
+}
+function qtyBack(){
+  CM.qty=(CM.qty||'').slice(0,-1);
+  var el=document.getElementById('npd-qty-val');if(el)el.textContent=CM.qty||'—';
+}
+
+// PALLETS STEP
+function renderPalletsStep(){
+  // Initialize to 1 if not set
+  if(!CM.pallets && CM.pallets !== 0) CM.pallets = 1;
+  var qty = parseFloat(CM.qty)||0;
+  var uom = CM.uom||'EACH';
+  var perPallet = CM.pallets > 0 ? Math.round(qty / CM.pallets) : qty;
+
+  return '<div class="step-title">'+t("step_PALLETS")+'</div>'+
+    '<div class="step-hint">'+t("step_PALLETS_hint")+'</div>'+
+    '<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">'+
+      '<div style="font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:1px">TOTAL QTY</div>'+
+      '<div style="font-family:var(--font-head);font-size:22px;font-weight:800;color:#fff">'+qty+' '+uom+'</div>'+
+    '</div>'+
+    '<div class="numpad-display">'+
+      '<div class="numpad-value" id="npd-pal-val">'+(CM.pallets||1)+'</div>'+
+      '<div class="numpad-unit">PALLETS / STACKS</div>'+
+      '<div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px" id="npd-pal-sub">'+
+        (qty && CM.pallets > 0 ? '≈ '+perPallet+' '+uom+' per pallet' : '')+
+      '</div>'+
+    '</div>'+
+    '<div class="numpad-grid">'+
+    '<div class="numpad-key" onclick="palKey(7)">7</div>'+
+    '<div class="numpad-key" onclick="palKey(8)">8</div>'+
+    '<div class="numpad-key" onclick="palKey(9)">9</div>'+
+    '<div class="numpad-key" onclick="palKey(4)">4</div>'+
+    '<div class="numpad-key" onclick="palKey(5)">5</div>'+
+    '<div class="numpad-key" onclick="palKey(6)">6</div>'+
+    '<div class="numpad-key" onclick="palKey(1)">1</div>'+
+    '<div class="numpad-key" onclick="palKey(2)">2</div>'+
+    '<div class="numpad-key" onclick="palKey(3)">3</div>'+
+    '<div class="numpad-key" onclick="palClear()">CLR</div>'+
+    '<div class="numpad-key zero" onclick="palKey(0)">0</div>'+
+    '<div class="numpad-key backspace" onclick="palBack()">⌫</div>'+
+    '</div>'+
+    '<div style="display:flex;gap:8px;margin-top:12px">'+
+      [1,2,3,4,5,6,8,10,12].map(function(n){
+        return '<div style="background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,'+(CM.pallets===n?'0.5':'0.1')+');border-radius:8px;padding:10px 0;flex:1;text-align:center;cursor:pointer;font-family:var(--font-head);font-size:16px;font-weight:700;color:'+(CM.pallets===n?'var(--accent)':'#fff')+'" onclick="palSe'+n+'">'+n+'</div>';
+      }).join('')+
+    '</div>';
+}
+
+var _palStr = '';
+function palKey(k){
+  var s = String(k);
+  _palStr = (_palStr==='0'||_palStr===''?s:_palStr+s);
+  CM.pallets = parseInt(_palStr)||1;
+  updatePalDisplay();
+}
+function palClear(){
+  _palStr='1'; CM.pallets=1; updatePalDisplay();
+}
+function palBack(){
+  _palStr = _palStr.slice(0,-1)||'1';
+  CM.pallets = parseInt(_palStr)||1;
+  updatePalDisplay();
+}
+function palSet(n){
+  CM.pallets = n; _palStr = String(n);
+  updatePalDisplay();
+  // Re-render step to update quick-select highlighting
+  renderCountStep();
+}
+function updatePalDisplay(){
+  var el = document.getElementById('npd-pal-val');
+  var sub = document.getElementById('npd-pal-sub');
+  if(el) el.textContent = CM.pallets||1;
+  if(sub && CM.qty && CM.pallets > 0){
+    sub.textContent = '≈ '+Math.round((parseFloat(CM.qty)||0)/CM.pallets)+' '+(CM.uom||'EACH')+' per pallet';
+  }
+}
+
+// REVIEW STEP
+function renderReviewStep(){
+  var bf=calcBF(CM.thk,CM.width,CM.length,CM.qty,CM.uom);
+  var val=calcValue(CM);
+  var isRework=CM.rework;
+  var isOrder=CM.orderYN==='Y';
+
+  return '<div class="step-title">'+t("step_REVIEW")+'</div>'+
+    '<div class="step-hint">'+t("step_REVIEW_hint")+'</div>'+
+    '<div class="review-block">'+
+      '<div class="review-row"><span class="review-label">'+t("type")+'</span><span class="review-value">'+CM.type+'</span></div>'+
+      '<div class="review-row"><span class="review-label">'+t("species")+'</span><span class="review-value">'+CM.specie+'</span></div>'+
+      (CM.grade&&CM.grade!=='N/A'?'<div class="review-row"><span class="review-label">'+t("grade")+'</span><span class="review-value">'+CM.grade+'</span></div>':'')+
+      '<div class="review-row"><span class="review-label">'+t("thickness")+'</span><span class="review-value">'+CM.thk+'"</span></div>'+
+      '<div class="review-row"><span class="review-label">'+t("width")+'</span><span class="review-value">'+CM.width+'"</span></div>'+
+      '<div class="review-row"><span class="review-label">'+t("length")+'</span><span class="review-value">'+CM.length+'"</span></div>'+
+      '<div class="review-row"><span class="review-label">'+t("qtyUom")+'</span><span class="review-value">'+CM.qty+' '+CM.uom+'</span></div>'+
+      '<div class="review-row"><span class="review-label">'+t("pallets")+'</span><span class="review-value gold">'+(CM.pallets||1)+'&nbsp;<span style="font-size:12px;opacity:0.6">(≈ '+Math.round((parseFloat(CM.qty)||0)/(CM.pallets||1))+' '+CM.uom+' ea)</span></span></div>'+
+    '</div>'+
+    '<div class="bf-display">'+
+      '<div class="bf-number">'+(bf>0?bf.toFixed(2):'0.00')+'</div>'+
+      '<div class="bf-label">'+t("sqft")+'</div>'+
+    '</div>'+
+    (val.value>0?'<div class="value-display">'+
+      '<div class="value-number">'+fmt$(val.value)+'</div>'+
+      '<div class="value-label">'+t("estValue")+'</div>'+
+      '<div class="value-breakdown">'+esc(val.breakdown)+'</div>'+
+    '</div>':'')+
+    '<div class="flag-row">'+
+      '<div class="flag-btn'+(isRework?' rework-on':'')+'" onclick="toggleReview(\'rework\')">'+
+        '<span class="flag-label">'+t("rework")+'</span><span style="font-size:10px;color:rgba(255,255,255,0.4);display:block;margin-top:2px">'+(isRework?t('flagged'):t('tapToFlag'))+'</span>'+
+      '</div>'+
+      '<div class="flag-btn'+(isOrder?' order-on':'')+'" onclick="toggleReview(\'order\')">'+
+        '<span class="flag-label">'+t("order")+'</span><span style="font-size:10px;color:rgba(255,255,255,0.4);display:block;margin-top:2px">'+(isOrder?'YES':t('tapToFlag'))+'</span>'+
+      '</div>'+
+    '</div>'+
+
+    '<div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:6px">'+t('notes')+'</div>'+
+    '<textarea class="count-notes-inp" id="review-notes" rows="2" placeholder="'+t('notesPlaceholder')+'">'+esc(CM.notes||'')+'</textarea>'+
+    '<div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-top:10px;margin-bottom:6px">'+t('lotNumber')+'</div>'+
+    '<input class="lot-inp" id="review-lot" placeholder="e.g. 113548" value="'+esc(CM.lotNumber||'')+'">'+
+    '<div style="font-size:10px;color:rgba(200,160,64,0.5);margin-top:4px">Lot number locks price across inventories automatically.</div>';
+}
+function toggleReview(f){
+  if(f==='rework') CM.rework=!CM.rework;
+  if(f==='order') CM.orderYN=(CM.orderYN==='Y'?'N':'Y');
+  // Re-render just the flags
+  var newHtml=renderReviewStep();
+  document.getElementById('count-modal-body').innerHTML=newHtml;
+}
+
+// SAVE ENTRY
+function saveEntry(){
+  CM.notes=(document.getElementById('review-notes')||{}).value||'';
+  CM.lotNumber=((document.getElementById('review-lot')||{}).value||'').trim();
+  // pallets already in CM from PALLETS step
+  if(!CM.type){showToast('Select a type');return;}
+  if(!CM.specie){showToast('Select a species');return;}
+  if(!CM.thk){showToast('Enter thickness');return;}
+  if(!CM.width){showToast('Enter width');return;}
+  if(!CM.length){showToast('Enter length');return;}
+  if(!CM.qty||parseFloat(CM.qty)<=0){showToast('Enter quantity');return;}
+
+  var sess=getActiveSession(); if(!sess) return;
+  var entry=Object.assign({},CM,{
+    id:uid(),
+    zone:STATE.activeZone||'',
+    location:STATE.activeLocation||'',
+    counter:STATE.activeCounter||'',
+    createdAt:nowISO(),
+    sessionId:sess.id,
+  });
+
+  // Handle APEX lot price locking
+  if(entry.lotNumber){
+    if(!STATE.lotPrices[entry.lotNumber]){
+      // Lock price now
+      var val=calcValue(entry);
+      if(val.unitCost>0){
+        STATE.lotPrices[entry.lotNumber]={
+          price:val.unitCost, specie:entry.specie, grade:entry.grade,
+          type:entry.type, lockedAt:nowISO(), lockedBy:STATE.activeCounter||CURRENT_USER&&CURRENT_USER.email||'',
+          method:val.method
+        };
+        showToast('Lot #'+entry.lotNumber+' price locked: '+fmt$(val.unitCost)+'/BF');
+      }
+    }
+  }
+
+  if(!sess.entries) sess.entries=[];
+  sess.entries.push(entry);
+  save();
+  closeCountModal();
+  renderCount();
+  showToast('Entry saved ✓');
+}
+
+// ── COUNTING TAB (counter view) ──────────────────────────────────────────────
+function renderCounting(){
+  var el = document.getElementById('counting-content'); if(!el) return;
+  var sess = getActiveSession();
+
+  if(!sess){
+    el.innerHTML='<div style="text-align:center;padding:48px 16px">'+
+      '<div style="font-size:48px;margin-bottom:12px">📋</div>'+
+      '<div style="font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--navy);letter-spacing:2px;margin-bottom:8px">'+t('noActiveSession')+'</div>'+
+      '<div style="font-size:14px;color:var(--gray-400);margin-bottom:24px">'+t('createSessionFirst')+'</div>'+
+    '</div>';
+    return;
+  }
+
+  var myEntries = (sess.entries||[]).filter(function(e){ return e.counter===STATE.activeCounter; });
+  var totalSF = myEntries.reduce(function(a,e){return a+calcBF(e.thk,e.width,e.length,e.qty,e.uom);},0);
+  var totalVal = myEntries.reduce(function(a,e){return a+calcValue(e).value;},0);
+
+  el.innerHTML =
+    // Location banner
+    '<div class="zone-header" style="margin-bottom:14px">'+
+      '<div class="zone-info"><div>'+
+        '<div class="zone-name">'+(STATE.activeLocation||'No Location Set')+'</div>'+
+        '<div class="zone-counter">👤 '+(STATE.activeCounter||'Set your name')+'</div>'+
+      '</div></div>'+
+      '<div class="zone-stats">'+
+        '<div class="zone-stat"><div class="zone-stat-val">'+myEntries.length+'</div><div class="zone-stat-lbl">Entries</div></div>'+
+        '<div class="zone-stat"><div class="zone-stat-val">'+totalSF.toFixed(0)+'</div><div class="zone-stat-lbl">SqFt</div></div>'+
+        '<div class="zone-stat"><div class="zone-stat-val" style="color:var(--accent)">'+fmt$(totalVal)+'</div><div class="zone-stat-lbl">Value</div></div>'+
+      '</div>'+
+    '</div>'+
+    // Action buttons
+    '<div style="display:flex;gap:10px;margin-bottom:20px">'+
+      '<button class="btn btn-gold btn-lg" onclick="openCountModal()" style="flex:1">'+t('newEntry')+'</button>'+
+      '<button class="btn btn-primary" onclick="openZoneModal()">📍 '+t('changeZone')+'</button>'+
+    '</div>'+
+    // Mark complete button
+    (STATE.activeLocation?
+      '<button class="btn btn-green" style="width:100%;margin-bottom:20px;padding:14px" onclick="markLocationComplete()">'+
+        (STATE.completedLocations&&STATE.completedLocations[STATE.activeLocation]?'✓ MARKED COMPLETE':'✓ Mark My Location Complete')+
+      '</button>':'');
+}
+
+// ── MY ENTRIES TAB ────────────────────────────────────────────────────────────
+function renderMyEntries(){
+  var el = document.getElementById('myentries-content'); if(!el) return;
+  var sess = getActiveSession();
+  var myEntries = sess ? (sess.entries||[]).filter(function(e){ return e.counter===STATE.activeCounter; }) : [];
+  myEntries = myEntries.slice().sort(function(a,b){return new Date(b.createdAt||0)-new Date(a.createdAt||0);});
+
+  var html = '<div style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--navy);letter-spacing:2px;margin-bottom:4px">'+(LANG==='es'?'MIS ENTRADAS':'MY ENTRIES')+'</div>'+
+    '<div style="font-size:12px;color:var(--gray-400);margin-bottom:14px">'+(LANG==='es'?'Revisa y corrige tus entradas':'Review and fix your entries before finishing')+'</div>';
+
+  if(!myEntries.length){
+    html += '<div style="text-align:center;padding:40px;color:var(--gray-400)">'+
+      '<div style="font-size:40px;margin-bottom:12px">📝</div>'+
+      '<div>'+(LANG==='es'?'Sin entradas todavía':'No entries yet')+'</div></div>';
+    el.innerHTML=html; return;
+  }
+
+  var totalSF = myEntries.reduce(function(a,e){return a+calcBF(e.thk,e.width,e.length,e.qty,e.uom);},0);
+  var totalVal = myEntries.reduce(function(a,e){return a+calcValue(e).value;},0);
+
+  html += '<div class="summary-grid" style="margin-bottom:14px">'+
+    '<div class="stat-box"><div class="stat-val">'+myEntries.length+'</div><div class="stat-lbl">'+(LANG==='es'?'Entradas':'Entries')+'</div></div>'+
+    '<div class="stat-box"><div class="stat-val">'+totalSF.toFixed(0)+'</div><div class="stat-lbl">SqFt</div></div>'+
+    '<div class="stat-box"><div class="stat-val" style="font-size:20px">'+fmt$(totalVal)+'</div><div class="stat-lbl">'+(LANG==='es'?'Valor':'Value')+'</div></div>'+
+  '</div>';
+
+  html += '<div class="entry-list">';
+  myEntries.forEach(function(e){
+    var sf = calcBF(e.thk,e.width,e.length,e.qty,e.uom);
+    var val = calcValue(e);
+    html += '<div class="entry-card">'+
+      '<div class="entry-type-badge">'+esc(e.type||'?')+'</div>'+
+      '<div class="entry-details">'+
+        '<div class="entry-main">'+esc(e.type)+(e.specie?' · '+e.specie:'')+(e.grade&&e.grade!=='N/A'?' '+e.grade:'')+'</div>'+
+        '<div class="entry-dims">'+e.thk+'" × '+e.width+'" × '+e.length+'" · '+e.qty+' '+e.uom+'</div>'+
+        (e.notes?'<div style="font-size:11px;color:var(--gray-400);font-style:italic">'+esc(e.notes)+'</div>':'')+
+        '<div class="entry-meta">'+
+          '<span class="entry-pill pill-sf">'+sf.toFixed(1)+' SqFt</span>'+
+          (val.value>0?'<span class="entry-pill pill-val">'+fmt$(val.value)+'</span>':'')+
+          (e.rework?'<span class="entry-pill pill-rework">REWORK</span>':'')+
+        '</div>'+
+        '<div class="entry-timestamp">'+fmtDateTime(e.createdAt)+'</div>'+
+      '</div>'+
+      '<div class="entry-actions">'+
+        '<button class="rm-btn-e" onclick="deleteMyEntry(this.dataset.id)" data-id="'+e.id+'" title="Delete">🗑</button>'+
+      '</div>'+
+    '</div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function deleteMyEntry(eid){
+  if(!confirm(LANG==='es'?'¿Eliminar esta entrada?':'Delete this entry?')) return;
+  var sess=getActiveSession(); if(!sess) return;
+  sess.entries=(sess.entries||[]).filter(function(e){return e.id!==eid;});
+  save(); renderMyEntries();
+  showToast(LANG==='es'?'Entrada eliminada':'Entry deleted');
+}
+
+// ── LOCATION COMPLETE STATUS ──────────────────────────────────────────────────
+function markLocationComplete(){
+  if(!STATE.completedLocations) STATE.completedLocations={};
+  if(!STATE.apexLots) STATE.apexLots=[];
+  if(!STATE.dockItems) STATE.dockItems=[];
+  var loc = STATE.activeLocation;
+  if(!loc) return;
+  if(STATE.completedLocations[loc]){
+    if(!confirm('Mark '+loc+' as NOT complete?')) return;
+    delete STATE.completedLocations[loc];
+    showToast(loc+' marked incomplete');
+  } else {
+    STATE.completedLocations[loc] = {by:STATE.activeCounter, at:nowISO()};
+    showToast('✓ '+loc+' marked complete!');
+  }
+  save(); renderCounting(); renderCount();
+}
+
+// ── SESSIONS TAB ─────────────────────────────────────────────────────────────
+function renderSessions(){
+  var el=document.getElementById('sessions-content'); if(!el) return;
+  var sessions=STATE.sessions||[];
+  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'+
+    '<div style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--navy);letter-spacing:2px">INVENTORY SESSIONS</div>'+
+    '<button class="btn btn-gold" onclick="openModal(\'new-session-modal\');document.getElementById(\'ns-date\').value=new Date().toISOString().slice(0,10)">+ New Session</button>'+
+  '</div>';
+
+  if(!sessions.length){
+    html+='<div style="text-align:center;padding:40px;color:var(--gray-400)"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-size:15px">No sessions yet. Create your first inventory session.</div></div>';
+  } else {
+    sessions.slice().reverse().forEach(function(s){
+      var entries=s.entries||[];
+      var totalBF=entries.reduce(function(a,e){return a+calcBF(e.thk,e.width,e.length,e.qty,e.uom);},0);
+      var totalVal=entries.reduce(function(a,e){return a+calcValue(e).value;},0);
+      var isActive=s.id===STATE.activeSessionId;
+      var statusColor=s.status==='complete'?'var(--green)':isActive?'var(--accent)':'var(--gray-200)';
+      html+='<div class="inv-row'+(isActive?' active-session':'')+'">'+
+        '<div class="inv-status-dot" style="background:'+statusColor+'"'+(isActive?' class="dot-active"':s.status==='complete'?' class="dot-done"':'')+' ></div>'+
+        '<div style="flex:1">'+
+          '<div style="font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--navy)">'+esc(s.label||s.quarter||s.date)+'</div>'+
+          '<div style="font-size:11px;color:var(--gray-400);margin-top:2px">'+fmtDate(s.date)+(s.quarter?' · '+s.quarter:'')+(s.notes?' · '+s.notes:'')+'</div>'+
+          '<div style="font-size:11px;color:var(--gray-600);margin-top:4px">'+entries.length+' entries · '+totalBF.toFixed(0)+' BF · '+fmt$(totalVal)+'</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">'+
+          (isActive?'<span style="font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--accent);background:rgba(200,160,64,0.1);border:1px solid rgba(200,160,64,0.3);padding:3px 8px;border-radius:4px">ACTIVE</span>':'<button class="btn btn-primary btn-sm" onclick="activateSession(\''+s.id+'\')">Load</button>')+
+          '<button class="btn btn-ghost btn-sm" onclick="exportSession(\''+s.id+'\')">⬇ Export CSV</button>'+
+          (s.status!=='complete'?'<button class="btn btn-green btn-sm" onclick="completeSession(\''+s.id+'\')">✓ Complete</button>':'')+
+          '<button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteSession(\''+s.id+'\')">🗑</button>'+
+        '</div>'+
+      '</div>';
+    });
+  }
+  el.innerHTML=html;
+}
+
+function createSession(){
+  var date=document.getElementById('ns-date').value;
+  var label=document.getElementById('ns-label').value.trim();
+  var quarter=document.getElementById('ns-quarter').value.trim();
+  var notes=document.getElementById('ns-notes').value.trim();
+  if(!date){showToast('Enter a date');return;}
+  var sess={id:uid(),date:date,label:label,quarter:quarter,notes:notes,status:'active',entries:[],createdAt:nowISO()};
+  STATE.sessions.push(sess);
+  STATE.activeSessionId=sess.id;
+  closeModal('new-session-modal');
+  save(); renderSessions(); setTab('count');
+  showToast('Session created — start counting!');
+}
+
+function activateSession(id){
+  STATE.activeSessionId=id;
+  save(); renderSessions(); setTab('count');
+  showToast('Session loaded');
+}
+
+function completeSession(id){
+  if(!confirm('Mark this session as complete?')) return;
+  var s=STATE.sessions.find(function(x){return x.id===id;}); if(!s) return;
+  s.status='complete';
+  if(STATE.activeSessionId===id) STATE.activeSessionId=null;
+  save(); renderSessions();
+  showToast('Session marked complete');
+}
+
+function deleteSession(id){
+  if(!confirm('Delete this entire session and ALL its entries?\n\nThis cannot be undone.')) return;
+  STATE.sessions=STATE.sessions.filter(function(s){return s.id!==id;});
+  if(STATE.activeSessionId===id) STATE.activeSessionId=null;
+  save(); renderSessions();
+  showToast('Session deleted');
+}
+
+// ── HISTORY TAB ───────────────────────────────────────────────────────────────
+function renderHistory(){
+  var el=document.getElementById('history-content'); if(!el) return;
+  var completed=STATE.sessions.filter(function(s){return s.status==='complete';});
+  var all=STATE.sessions;
+  var html='<div style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--navy);letter-spacing:2px;margin-bottom:14px">INVENTORY HISTORY</div>';
+  if(!all.length){html+='<div style="text-align:center;padding:40px;color:var(--gray-400)">No sessions yet.</div>';el.innerHTML=html;return;}
+  all.slice().reverse().forEach(function(s){
+    var entries=s.entries||[];
+    if(!entries.length&&s.status!=='complete'){return;}
+    var totalBF=entries.reduce(function(a,e){return a+calcBF(e.thk,e.width,e.length,e.qty,e.uom);},0);
+    var totalVal=entries.reduce(function(a,e){return a+calcValue(e).value;},0);
+    // Group by type
+    var byType={};
+    entries.forEach(function(e){
+      if(!byType[e.type])byType[e.type]={count:0,bf:0,val:0};
+      byType[e.type].count++;
+      byType[e.type].bf+=calcBF(e.thk,e.width,e.length,e.qty,e.uom);
+      byType[e.type].val+=calcValue(e).value;
+    });
+    var typeRows=Object.keys(byType).map(function(t){
+      return '<tr><td>'+t+'</td><td style="text-align:right">'+byType[t].count+'</td><td style="text-align:right">'+byType[t].bf.toFixed(1)+'</td><td style="text-align:right">'+fmt$(byType[t].val)+'</td></tr>';
+    }).join('');
+    html+='<div class="card" style="margin-bottom:14px">'+
+      '<div class="card-header" style="background:var(--navy)">'+
+        '<div style="flex:1"><div style="font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--accent)">'+esc(s.label||s.quarter||s.date)+'</div>'+
+        '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">'+fmtDate(s.date)+(s.quarter?' · '+s.quarter:'')+'</div></div>'+
+        '<div style="text-align:right"><div style="font-family:var(--font-head);font-size:22px;font-weight:800;color:#4dcc80">'+fmt$(totalVal)+'</div>'+
+        '<div style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1px">TOTAL VALUE</div></div>'+
+      '</div>'+
+      '<div class="card-body">'+
+        '<div class="summary-grid">'+
+          '<div class="stat-box"><div class="stat-val">'+entries.length+'</div><div class="stat-lbl">Entries</div></div>'+
+          '<div class="stat-box"><div class="stat-val">'+totalBF.toFixed(0)+'</div><div class="stat-lbl">Sq Ft</div></div>'+
+          '<div class="stat-box"><div class="stat-val" style="font-size:20px">'+fmt$(totalVal)+'</div><div class="stat-lbl">Total Value</div></div>'+
+          '<div class="stat-box"><div class="stat-val">'+Object.keys(byType).length+'</div><div class="stat-lbl">Types</div></div>'+
+        '</div>'+
+        (typeRows?'<div class="tbl-wrap" style="margin-bottom:12px"><table class="data-table"><thead><tr><th>Type</th><th style="text-align:right">Count</th><th style="text-align:right">SqFt</th><th style="text-align:right">Value</th></tr></thead><tbody>'+typeRows+'</tbody></table></div>':'')+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+          '<button class="btn btn-primary btn-sm" onclick="exportSession(\''+s.id+'\')">⬇ Export CSV</button>'+
+          '<button class="btn btn-ghost btn-sm" onclick="activateSession(\''+s.id+'\');setTab(\'count\')">View Entries</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  });
+  el.innerHTML=html;
+}
+
+// ── CSV EXPORT ────────────────────────────────────────────────────────────────
+function exportSession(id){
+  var sess=STATE.sessions.find(function(s){return s.id===id;});
+  if(!sess){showToast('Session not found');return;}
+  var entries=sess.entries||[];
+  if(!entries.length){showToast('No entries to export');return;}
+
+  var headers=['Session','Quarter','Date','Zone','Location','Counter','EntryNum','EntryDate','EntryTime','Type','Specie','Grade','THK','Width','Length','UOM','QTY','SqFt','UnitCost','TotalValue','ValuationMethod','ValuationBreakdown','Pallets','Rework','OrderYN','LotNumber','Notes','EntryTimestamp'];
+  var rows=[headers.join(',')];
+
+  var sessionLabel=sess.label||sess.quarter||sess.date;
+  var sessionDate=sess.date||'';
+
+  entries.forEach(function(e,idx){
+    var bf=calcBF(e.thk,e.width,e.length,e.qty,e.uom);
+    var val=calcValue(e);
+    var entryDT=e.createdAt?new Date(e.createdAt):null;
+    var entryDate=entryDT?entryDT.toLocaleDateString('en-US'):'';
+    var entryTime=entryDT?entryDT.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'';
+    var row=[
+      '"'+sessionLabel+'"',
+      '"'+(sess.quarter||'')+'"',
+      sessionDate,
+      '"'+(e.zone||'')+'"',
+      '"'+(e.location||'')+'"',
+      '"'+(e.counter||'')+'"',
+      idx+1,
+      entryDate,
+      entryTime,
+      e.type||'',
+      e.specie||'',
+      e.grade||'',
+      e.thk||'',
+      e.width||'',
+      e.length||'',
+      e.uom||'',
+      e.qty||'',
+      bf.toFixed(4),
+      val.unitCost.toFixed(4),
+      val.value.toFixed(2),
+      '"'+(val.method||'')+'"',
+      '"'+(val.breakdown||'').replace(/"/g,"'")+'"',
+      (e.pallets||0),
+      e.rework?'Y':'N',
+      e.orderYN||'N',
+      '"'+(e.lotNumber||'')+'"',
+      '"'+(e.notes||'').replace(/"/g,"'")+'"',
+      e.createdAt||''
+    ];
+    rows.push(row.join(','));
+  });
+
+  var csv=rows.join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='IDI_WIP_'+(sess.label||sess.quarter||sess.date).replace(/[^a-zA-Z0-9]/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exported — '+entries.length+' entries');
+}
+
+// ── VALUATION TAB ─────────────────────────────────────────────────────────────
+function renderValuation(){
+  var el=document.getElementById('valuation-content'); if(!el) return;
+  var y=STATE.yields;
+  el.innerHTML='<div style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--navy);letter-spacing:2px;margin-bottom:14px">VALUATION SETTINGS</div>'+
+  '<div class="card">'+
+    '<div class="card-header"><div class="card-title">⚠️ How WIP Valuation Works</div></div>'+
+    '<div class="card-body" style="font-size:13px;color:var(--gray-600);line-height:1.8">'+
+      '<b>WIP Material Formula:</b> BF × Lumber Price ÷ Yield %<br>'+
+      'Example: 210 BF × $1.21/BF ÷ 57% = <b>$445.61</b><br><br>'+
+      '<b>Length rule:</b> Items ≥ 84" long use Select & Better (SB) price; under 84" use 2C price.<br>'+
+      '<b>Lot numbers:</b> Once an APEX lot is priced, that price is locked forever — same lot gets same price next quarter.<br>'+
+      '<b>ICIM lumber/plywood:</b> Exact unit cost from your uploaded price file is used directly.<br>'+
+      '<b>Doors:</b> Avg selling price/sqft × sqft at 100% yield (set below).<br><br>'+
+      '<span style="color:var(--red);font-weight:700">⚠️ Always export and verify — valuation is automated but serious. Cross-check against your Excel master before finalizing.</span>'+
+    '</div>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="card-header"><div class="card-title">📊 Yield Percentages</div><button class="btn btn-gold btn-sm" onclick="saveYields()">Save Yields</button></div>'+
+    '<div class="card-body">'+
+      '<div class="yield-grid">'+
+        makeYieldRow('WIP 2C / GS / Panels','wip2C',y.wip2C,'Standard yield for most WIP (GS, rips, panels, moulding)')+
+        makeYieldRow('Select & Better (≥84")','wipSB',y.wipSB,'SB stock — better material, higher yield')+
+        makeYieldRow('Panel / Glue Stock','wipPanel',y.wipPanel,'Override specifically for GS/panel if different from 2C')+
+        makeYieldRow('Rework Items','wipRework',y.wipRework,'Rework shown at full value — adjust separately or set % here')+
+        makeYieldRow('Doors','wipDoor',y.wipDoor,'Doors valued at full selling price (100% typical)')+
+      '</div>'+
+    '</div>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="card-header"><div class="card-title">🚪 Door Pricing</div><button class="btn btn-gold btn-sm" onclick="saveDoorPrice()">Save</button></div>'+
+    '<div class="card-body">'+
+      '<div style="font-size:13px;color:var(--gray-600);margin-bottom:12px">Average selling price per square foot for door valuation. Update each inventory period to reflect current market.</div>'+
+      '<div style="display:flex;align-items:center;gap:12px">'+
+        '<span style="font-size:18px;font-family:var(--font-head);font-weight:700;color:var(--navy)">$</span>'+
+        '<input type="number" id="door-sqft-price" min="1" max="20" step="0.01" value="'+(STATE.doorSqftPrice||4.65)+'" style="width:100px;font-family:var(--font-head);font-size:24px;font-weight:700;color:var(--navy);border:2px solid var(--accent);border-radius:8px;padding:8px;text-align:center;outline:none">'+
+        '<span style="font-size:14px;color:var(--gray-400)">/sqft</span>'+
+        '<span style="font-size:12px;color:var(--gray-400)">(typical: $4.50–$4.80)</span>'+
+      '</div>'+
+    '</div>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="card-header"><div class="card-title">📋 ICIM Price Reference (Embedded)</div></div>'+
+    '<div class="card-body">'+
+      '<div style="font-size:13px;color:var(--gray-600);margin-bottom:10px">'+Object.keys(ICIM_PRICES).length+' items from your CSV are embedded. Sheet goods (SH) priced per sheet; lumber (BF) priced per board foot.</div>'+
+      '<div class="tbl-wrap"><table class="data-table"><thead><tr><th>Part</th><th>Description</th><th>UOM</th><th style="text-align:right">Unit Cost</th></tr></thead><tbody>'+
+      Object.entries(ICIM_PRICES).slice(0,20).map(function(kv){
+        return '<tr><td style="font-family:var(--font-head);font-size:11px">'+kv[0]+'</td><td style="font-size:12px">'+esc(kv[1].descr)+'</td><td>'+kv[1].uom+'</td><td style="text-align:right;font-weight:700">'+fmt$(kv[1].unitCost)+'</td></tr>';
+      }).join('')+
+      '<tr><td colspan="4" style="text-align:center;color:var(--gray-400);font-style:italic;font-size:11px">... '+(Object.keys(ICIM_PRICES).length-20)+' more items</td></tr>'+
+      '</tbody></table></div>'+
+    '</div>'+
+  '</div>';
+}
+function makeYieldRow(label, key, val, tip){
+  return '<div class="yield-item" style="flex-direction:column;align-items:flex-start;gap:6px">'+
+    '<div style="font-size:13px;font-weight:700;color:var(--navy)">'+label+'</div>'+
+    '<div style="font-size:11px;color:var(--gray-400)">'+tip+'</div>'+
+    '<div style="display:flex;align-items:center;gap:8px;margin-top:4px">'+
+      '<input type="number" class="yield-input" id="yield-'+key+'" min="1" max="100" value="'+(val||57)+'">'+
+      '<span class="yield-pct">%</span>'+
+    '</div>'+
+  '</div>';
+}
+function saveYields(){
+  var keys=['wip2C','wipSB','wipPanel','wipRework','wipDoor'];
+  keys.forEach(function(k){
+    var el=document.getElementById('yield-'+k);
+    if(el) STATE.yields[k]=parseFloat(el.value)||57;
+  });
+  save(); showToast('Yields saved ✓');
+}
+function saveDoorPrice(){
+  var el=document.getElementById('door-sqft-price');
+  if(el) STATE.doorSqftPrice=parseFloat(el.value)||4.65;
+  save(); showToast('Door price saved: '+fmt$(STATE.doorSqftPrice)+'/sqft');
+}
+
+// ── LOTS TAB ──────────────────────────────────────────────────────────────────
+function renderLots(){
+  var el=document.getElementById('lots-content'); if(!el) return;
+  var lots=STATE.lotPrices||{};
+  var keys=Object.keys(lots);
+
+  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">'+
+    '<div style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--navy);letter-spacing:2px">LOT PRICE HISTORY</div>'+
+    '<button class="btn btn-ghost btn-sm" onclick="addManualLot()">+ Add Manual Lot</button>'+
+  '</div>'+
+  '<div style="font-size:13px;color:var(--gray-600);margin-bottom:14px;line-height:1.7">'+
+    'APEX lot numbers are locked to a price when first seen. That price persists inventory to inventory — exactly like your Excel vlookup. Supervisors can override any lot price below.'+
+  '</div>';
+
+  if(!keys.length){
+    html+='<div style="text-align:center;padding:32px;color:var(--gray-400)">No lot prices locked yet. They lock automatically when you enter an APEX lot number during counting.</div>';
+    el.innerHTML=html; return;
+  }
+
+  html+='<div class="tbl-wrap"><table class="data-table"><thead><tr>'+
+    '<th>Lot #</th><th>Specie</th><th>Grade</th><th>Type</th><th style="text-align:right">Price/BF</th><th>Method</th><th>Locked At</th><th>By</th><th></th></tr></thead><tbody>';
+  keys.sort().forEach(function(lot){
+    var d=lots[lot];
+    html+='<tr>'+
+      '<td><span class="lot-locked">'+esc(lot)+'</span></td>'+
+      '<td style="font-weight:700">'+esc(d.specie||'—')+'</td>'+
+      '<td>'+esc(d.grade||'—')+'</td>'+
+      '<td>'+esc(d.type||'—')+'</td>'+
+      '<td style="text-align:right;font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--green)">'+fmt$(d.price)+'</td>'+
+      '<td style="font-size:11px;color:var(--gray-400)">'+esc(d.method||'')+'</td>'+
+      '<td style="font-size:11px;color:var(--gray-400)">'+fmtDate(d.lockedAt)+'</td>'+
+      '<td style="font-size:11px;color:var(--gray-400)">'+esc(d.lockedBy||'')+'</td>'+
+      '<td style="white-space:nowrap">'+
+        (IS_SUPERVISOR?'<button class="btn btn-ghost btn-sm" onclick="editLotPrice(\''+lot+'\')">Edit</button> ':'')+
+        (IS_SUPERVISOR?'<button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteLot(\''+lot+'\')">✕</button>':'')+
+      '</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  el.innerHTML=html;
+}
+
+function editLotPrice(lot){
+  var d=STATE.lotPrices[lot];
+  var newPrice=prompt('Edit price for Lot #'+lot+' ('+d.specie+' '+d.grade+')\nCurrent: $'+d.price+'/BF\n\nEnter new price per board foot:',d.price);
+  if(!newPrice) return;
+  var p=parseFloat(newPrice);
+  if(isNaN(p)||p<=0){showToast('Invalid price');return;}
+  STATE.lotPrices[lot].price=p;
+  STATE.lotPrices[lot].editedAt=nowISO();
+  STATE.lotPrices[lot].editedBy=CURRENT_USER&&CURRENT_USER.email||'';
+  save(); renderLots(); showToast('Lot #'+lot+' updated: '+fmt$(p)+'/BF');
+}
+
+function deleteLot(lot){
+  if(!confirm('Remove locked price for Lot #'+lot+'?\n\nFuture entries with this lot number will get the current lumber price, not the locked one.')) return;
+  delete STATE.lotPrices[lot];
+  save(); renderLots(); showToast('Lot #'+lot+' removed');
+}
+
+function addManualLot(){
+  var lot=prompt('Enter APEX Lot Number:'); if(!lot||!lot.trim()) return;
+  lot=lot.trim();
+  var specie=prompt('Specie (e.g. BSM):'); if(!specie) return;
+  var grade=prompt('Grade (e.g. 2C):'); if(!grade) return;
+  var price=prompt('Price per BF ($):'); if(!price) return;
+  var p=parseFloat(price);
+  if(isNaN(p)||p<=0){showToast('Invalid price');return;}
+  STATE.lotPrices[lot]={price:p,specie:specie.toUpperCase().trim(),grade:grade.toUpperCase().trim(),type:'MANUAL',lockedAt:nowISO(),lockedBy:CURRENT_USER&&CURRENT_USER.email||'',method:'MANUAL'};
+  save(); renderLots(); showToast('Lot #'+lot+' added: '+fmt$(p)+'/BF');
+}
+
+// ── SETTINGS TAB ──────────────────────────────────────────────────────────────
+function renderSettings2(){
+  var el=document.getElementById('settings-content'); if(!el) return;
+  el.innerHTML='<div style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--navy);letter-spacing:2px;margin-bottom:14px">SETTINGS</div>'+
+  '<div class="card">'+
+    '<div class="card-header"><div class="card-title">🏢 Company</div></div>'+
+    '<div class="card-body">'+
+      '<div class="field"><label>Company Name</label><input id="sett-company" value="'+esc(STATE.companyName||'Indiana Dimension Inc.')+'"></div>'+
+      '<button class="btn btn-primary btn-sm" onclick="saveCompany()">Save</button>'+
+    '</div>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="card-header"><div class="card-title">☁️ Team Access</div></div>'+
+    '<div class="card-body" style="font-size:13px;color:var(--gray-600);line-height:1.8">'+
+      'Tap <b>🔗 Share Code</b> in the header. Share the 6-character code with a counter. They sign in, enter the code, and join your inventory live — no email sharing needed.<br><br>'+
+      'Counters can enter items. Only supervisors can delete entries, edit lot prices, change yields, or manage sessions.<br><br>'+
+      '<b>Signed in as:</b> '+(CURRENT_USER?esc(CURRENT_USER.email):'Not signed in')+'<br>'+
+      '<b>Role:</b> '+(IS_SUPERVISOR?'Supervisor':'Counter (linked to supervisor)')+
+    '</div>'+
+    '<div style="padding:0 16px 16px;display:flex;gap:8px;flex-wrap:wrap">'+
+      (IS_SUPERVISOR?'<button class="btn btn-primary btn-sm" onclick="showShareCode()">🔗 Get Share Code</button>':'')+
+      '<button class="btn btn-ghost btn-sm" onclick="doSignOut()">Sign Out</button>'+
+      (!IS_SUPERVISOR?'<button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="unlinkCounter()">Unlink from Supervisor</button>':'')+
+    '</div>'+
+  '</div>';
+}
+function saveCompany(){
+  STATE.companyName=document.getElementById('sett-company').value.trim()||'Indiana Dimension Inc.';
+  save(); updateAuthBar(); showToast('Saved');
+}
+function unlinkCounter(){
+  if(!confirm('Unlink from this supervisor?\n\nYou\'ll need a new share code to rejoin.')) return;
+  db.collection('wipSupervisors').doc(CURRENT_USER.uid).update({linkedTo:firebase.firestore.FieldValue.delete(),isCounter:firebase.firestore.FieldValue.delete()}).then(function(){
+    COACH_ID=CURRENT_USER.uid; IS_SUPERVISOR=true; STATE=defaultState();
+    renderAll(); updateAuthBar(); showToast('Unlinked');
+  });
+}
+
+// ── HELP TAB ──────────────────────────────────────────────────────────────────
+function renderHelp2(){
+  var el=document.getElementById('help-content'); if(!el) return;
+  el.innerHTML='<div style="font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--navy);letter-spacing:2px;margin-bottom:4px">IDI WIP HELP</div>'+
+  '<div style="font-size:12px;color:var(--gray-400);margin-bottom:20px;letter-spacing:1px">Indiana Dimension Inc. · Work In Progress Inventory System</div>'+
+
+  helpCard('🚀','Quick Start',
+    '<b>1. Supervisor</b> creates a new Inventory Session (Sessions tab → + New Session).<br>'+
+    '<b>2. Everyone</b> opens the Count tab, sets their Zone + Counter name, and taps <b>+ New Entry</b>.<br>'+
+    '<b>3. Walk the inventory</b> — the 8-step counting flow guides you through Type → Species → Grade → Thickness → Width → Length → Qty → Review.<br>'+
+    '<b>4. Review screen</b> shows Sq Ft and estimated $ value in real time. Flag REWORK and ORDER items. Enter APEX lot numbers.<br>'+
+    '<b>5. When done</b> — supervisor exports CSV from Sessions tab. Import into your Excel master to cross-check valuation.')+
+
+  helpCard('📱','Counting Flow (8 Steps)',
+    '<b>Step 1 — Type:</b> GS, UT, DIM, RIP, MD, MDC, MO, PLY, LU, RS, EQ, ARS<br>'+
+    '<b>Step 2 — Species:</b> WHM, WSM, BSM, ROA, HIC, CHE, ALD, POP, WAL, BHM, WOA, ASH, GBE, BIR, MDF, HMA, SMA, MIX<br>'+
+    '<b>Step 3 — Grade</b> (only for LU, RIP, MO, RS, ARS): SB, 1C, 2C, CAB, CUS, SUP, PAN, N/A<br>'+
+    '<b>Step 4 — Thickness:</b> Preset buttons (0.563"–2.0") or manual entry<br>'+
+    '<b>Step 5 — Width:</b> Numpad entry in inches — measure actual<br>'+
+    '<b>Step 6 — Length:</b> Numpad entry in inches — measure actual<br>'+
+    '<b>Step 7 — UOM + Qty:</b> Toggle EACH or ROWS, enter count<br>'+
+    '<b>Step 8 — Review:</b> Verify BF calc, see $ value, flag REWORK/ORDER, add notes, enter lot number → Save')+
+
+  helpCard('💲','Valuation Logic',
+    '<b>WIP items (GS, panels, rips, moulding):</b><br>'+
+    'Formula: BF × Lumber Price ÷ Yield %<br>'+
+    'Example: 210 BF × $1.2091/BF ÷ 57% = $445.61<br><br>'+
+    '<b>Length rule:</b> Items ≥ 84" → use Select & Better (SB) price. Under 84" → use 2C price.<br><br>'+
+    '<b>ICIM lumber (LU/PLY):</b> Exact price from your price file, no yield adjustment.<br><br>'+
+    '<b>Doors:</b> Avg selling price/sqft × sqft at 100% yield. Set the $/sqft in the Valuation tab.<br><br>'+
+    '<b>APEX lot numbers:</b> First time a lot is entered, its price is locked. Every future inventory uses the same price for that lot — mirrors your vlookup formula exactly.<br><br>'+
+    '<b>Yield adjustments:</b> Go to Valuation tab → Yield Percentages. Change 57% to 50% (or anything) and every future calculation updates. Different yields for different material types are supported.')+
+
+  helpCard('🏷️','Lot Price Locking',
+    'APEX glue stock, moulded stock, and ripped stock have lot numbers. Once priced, that price locks permanently:<br><br>'+
+    '• First entry with Lot #113548 → system calculates price → locks it forever<br>'+
+    '• Next quarter, same lot → same locked price used automatically<br>'+
+    '• View all locked lots in the <b>Lots tab</b><br>'+
+    '• Supervisors can override or delete any lot price<br>'+
+    '• Add lots manually in the Lots tab (for imported lots not yet counted)')+
+
+  helpCard('📤','Exporting',
+    'Go to Sessions tab → click <b>⬇ Export CSV</b> on any session.<br><br>'+
+    'CSV columns include: Session, Quarter, Date, Zone, Location, Counter, EntryNum, EntryDate, EntryTime (timestamp), Type, Specie, Grade, THK, Width, Length, UOM, QTY, SqFt, UnitCost, TotalValue, ValuationMethod, ValuationBreakdown, Rework, OrderYN, LotNumber, Notes, EntryTimestamp.<br><br>'+
+    'Import into your Excel master for final verification. Cross-check the TotalValue column against your own formulas before posting to financials.')+
+
+  helpCard('🔗','Team Access',
+    'Tap <b>🔗 Share Code</b> in the header → share the 6-char code with counters.<br>'+
+    'Counters open the app, sign in with their email, enter the code on the Join screen.<br>'+
+    'All entries sync to the supervisor\'s data in real time via Firebase.<br><br>'+
+    '<b>Supervisor:</b> Full access — create sessions, edit yields, manage lot prices, export, delete entries.<br>'+
+    '<b>Counter:</b> Can add entries only — cannot delete, cannot change settings.');
+  el.innerHTML=el.innerHTML; // trigger render
+}
+function helpCard(icon, title, body){
+  return '<div class="help-card"><div class="help-title">'+icon+' '+title+'</div><div class="help-body">'+body+'</div></div>';
+}
+
+// ── HEADER META ────────────────────────────────────────────────────────────────
+function renderHeaderMeta(){
+  var el=document.getElementById('header-meta'); if(!el) return;
+  var sess=getActiveSession();
+  if(sess){
+    el.innerHTML='<div style="text-align:right"><div style="font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--accent)">'+esc(sess.label||sess.quarter||sess.date)+'</div>'+
+      '<div style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1px">'+fmtDate(sess.date)+' · '+(sess.entries||[]).length+' entries</div></div>';
+  } else {
+    el.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:1px">No active session</div>';
+  }
+}
+
+// Boot — real auth handled by onAuthStateChanged above
+// Just load state from localStorage as fallback
+(function(){
+  try{var r=localStorage.getItem('idi_wip_v1');if(r)STATE=JSON.parse(r);}catch(e){}
+  applyMigrations();
+})();
+
+
+// ── SPECIE & GRADE MAPS (APEX → Internal) ──────────────────────────────────
+var APEX_SPECIE_MAP = {
+  'WHSMAPLE':'WSM','WHMAPLE':'WHM','WHTMAPLE':'WHM','REDOAK':'ROA',
+  'CHERRY':'CHE','MDFC':'MDF','MDF':'MDF','HICKORY':'HIC','WHOAK':'WOA',
+  'BIRCH':'BIR','BSMAPLE':'BSM','GERBEECH':'GBE','WALNUT':'WAL',
+  'ALDER':'ALD','POPLAR':'POP','ASH':'ASH','BRHMAPLE':'BHM','BHMAPLE':'BHM',
+  'HMAPLE':'HMA','SMAPLE':'SMA','RHICKORY':'HIC','YELBIRCH':'BIR',
+  'UNSMAPLE':'SMA','MAHOGANY':'MIX','KNALDER':'ALD','SAPWHASH':'ASH',
+  'BRDEYMPL':'WSM','MDFASKIN':'MDF','MDFCKRON':'MDF','MDFN':'MDF',
+  'MDFA':'MDF','MDFD':'MDF','MDFE':'MDF','MDFF':'MDF','MDFI':'MDF',
+  'MDF4.5P':'MDF','MDF5.2':'MDF','WALAMDF':'MDF','WHMEMDF':'MDF',
+  'WHMFMDF':'MDF','WHMIMDF':'MDF','WOAIMDF':'MDF','WOARFMDF':'MDF',
+  'WOIRFMDF':'MDF','HICIMDF':'MDF','ALDIMDF':'MDF','5296AWSM':'WSM',
+  '52CHB1PS':'CHE','52GBB1WP':'GBE','52ROASAP':'ROA','52WHBIR':'BIR',
+  'B96AALDB':'ALD','BLMEL':'MDF','ROIWPFB2':'ROA','MDPLAB2':'MDF',
+};
+var APEX_GRADE_MAP = {
+  '2C':'2C','2 COMMON':'2C','SB':'SB','SELECT':'SB','1C':'1C',
+  '1 COMMON':'1C','CABINET':'CAB','CAB':'CAB','SUPERIOR':'SUP',
+  'PF':'PAN','PANEL GRADE':'PAN','RUSTIC':'2C','MDF':'MDF','PLY':'PLY',
+};
+var APEX_ENGC_MAP = {'GS':'GS','RM':'LU','RS':'RIP','MO':'MO'};
+
+function apexSpecieLookup(s){ return APEX_SPECIE_MAP[s] || s.slice(0,3); }
+function apexGradeLookup(g){ return APEX_GRADE_MAP[g] || g; }
+
+// Calculate SqFt from APEX lot row
+function apexCalcSqft(qty, uom, width){
+  var q = parseFloat(qty)||0, w = parseFloat(width)||0;
+  if(uom==='SQFT') return q;
+  if(uom==='FT')   return w > 0 ? (w/12)*q : q;
+  if(uom==='BF')   return q;
+  if(uom==='SH')   return q;
+  return q;
+}
+
+// Value a single APEX lot using our price engine
+function apexValueLot(row){
+  var specie = apexSpecieLookup(row.specie_code);
+  var grade  = apexGradeLookup(row.grade_code);
+  var engc   = row.engc;
+  var sqft   = apexCalcSqft(row.qty, row.uom, row.width);
+  var unitCost = 0, method = '', breakdown = '';
+
+  // Check if we have a locked lot price first
+  if(STATE.lotPrices && STATE.lotPrices[row.lot_number]){
+    var lp = STATE.lotPrices[row.lot_number];
+    unitCost = lp.price;
+    method = 'LOT LOCKED';
+    breakdown = 'Lot #'+row.lot_number+' locked @ '+fmt$(unitCost)+'/SqFt';
+  } else if(engc === 'GS'){
+    // Glue stock: price ÷ yield
+    var price = getLumber2CPrice(specie);
+    if(price){
+      var yld = (STATE.yields.wipPanel||57)/100;
+      unitCost = price/yld;
+      method = 'GS+YIELD';
+      breakdown = specie+' 2C '+fmt$(price)+'/SqFt ÷ '+(STATE.yields.wipPanel||57)+'%';
+    }
+  } else if(engc === 'RM'){
+    // Raw material - straight price no yield
+    var price = getLumberPrice(specie, grade) || getLumber2CPrice(specie);
+    if(price){
+      unitCost = price;
+      method = 'RM STRAIGHT';
+      breakdown = specie+' '+grade+' @ '+fmt$(price)+'/SqFt (no yield)';
+    }
+  } else if(engc === 'RS' || engc === 'MO'){
+    // Rip stock / moulding: price ÷ yield
+    var useSB = false; // lot-level, can't determine length easily
+    var price = getLumber2CPrice(specie);
+    if(price){
+      var yld = (STATE.yields.wip2C||57)/100;
+      unitCost = price/yld;
+      method = engc+'+YIELD';
+      breakdown = specie+' 2C '+fmt$(price)+'/SqFt ÷ '+(STATE.yields.wip2C||57)+'%';
+    }
+  }
+
+  return {sqft:sqft, unitCost:unitCost, value:sqft*unitCost, method:method, breakdown:breakdown, specie:specie, grade:grade};
+}
+
+// ── IMPORT TAB ────────────────────────────────────────────────────────────────
+function renderImport(){
+  var el = document.getElementById('import-content'); if(!el) return;
+
+  var apexLoaded  = STATE.apexLots  && STATE.apexLots.length  > 0;
+  var dockLoaded  = STATE.dockItems && STATE.dockItems.length  > 0;
+
+  var apexTotal = 0, apexSqft = 0;
+  if(apexLoaded){
+    STATE.apexLots.forEach(function(r){
+      var v = apexValueLot(r);
+      apexTotal += v.value; apexSqft += v.sqft;
+    });
+  }
+  var dockTotal = 0, dockSqft = 0;
+  if(dockLoaded){
+    STATE.dockItems.forEach(function(r){
+      dockTotal += parseFloat(r.price)||0;
+      dockSqft  += parseFloat(r.sqft)||0;
+    });
+  }
+
+  el.innerHTML =
+    '<div style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--navy);letter-spacing:2px;margin-bottom:4px">📂 DATA IMPORT</div>'+
+    '<div style="font-size:12px;color:var(--gray-400);margin-bottom:20px">Upload your APEX lot file, shipping dock file, and inventory valuation CSV to complete the inventory picture.</div>'+
+
+    // ── APEX LOT FILE ──
+    '<div class="card" style="margin-bottom:14px">'+
+      '<div class="card-header" style="background:var(--navy)">'+
+        '<div style="flex:1"><div style="font-family:var(--font-head);font-size:14px;font-weight:700;color:#fff;letter-spacing:1px">🏷️ APEX LOT FILE</div>'+
+        '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">lot_datasheet.csv — ripstock, glue stock, moulding, lumber lots</div></div>'+
+        (apexLoaded?'<span style="background:#1a7a40;color:#fff;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700">✓ '+STATE.apexLots.length+' LOTS</span>':'<span style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:3px 10px;border-radius:4px;font-size:11px">NOT LOADED</span>')+
+      '</div>'+
+      '<div class="card-body">'+
+        (apexLoaded?
+          '<div class="summary-grid" style="margin-bottom:12px">'+
+            '<div class="stat-box"><div class="stat-val">'+STATE.apexLots.length+'</div><div class="stat-lbl">Lots</div></div>'+
+            '<div class="stat-box"><div class="stat-val">'+apexSqft.toFixed(0)+'</div><div class="stat-lbl">Total SqFt</div></div>'+
+            '<div class="stat-box"><div class="stat-val" style="font-size:18px">'+fmt$(apexTotal)+'</div><div class="stat-lbl">Est. Value</div></div>'+
+          '</div>':'')+
+        '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+
+          '<label class="btn btn-primary" style="cursor:pointer">📂 Upload APEX CSV <input type="file" accept=".csv" style="display:none" onchange="importApexFile(this)"></label>'+
+          (apexLoaded?'<button class="btn btn-ghost btn-sm" onclick="exportApexValuation()">⬇ Export Valued Lots</button>':'')+''+
+          (apexLoaded?'<button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="clearApexData()">Clear</button>':'')+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    // ── SHIPPING DOCK ──
+    '<div class="card" style="margin-bottom:14px">'+
+      '<div class="card-header" style="background:var(--navy)">'+
+        '<div style="flex:1"><div style="font-family:var(--font-head);font-size:14px;font-weight:700;color:#fff;letter-spacing:1px">🚢 SHIPPING DOCK</div>'+
+        '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">Finished_Goods_on_Dock.xlsx — Beth monthly file</div></div>'+
+        (dockLoaded?'<span style="background:#1a7a40;color:#fff;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700">✓ '+STATE.dockItems.length+' ITEMS</span>':'<span style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:3px 10px;border-radius:4px;font-size:11px">NOT LOADED</span>')+
+      '</div>'+
+      '<div class="card-body">'+
+        (dockLoaded?
+          '<div class="summary-grid" style="margin-bottom:12px">'+
+            '<div class="stat-box"><div class="stat-val">'+STATE.dockItems.length+'</div><div class="stat-lbl">Line Items</div></div>'+
+            '<div class="stat-box"><div class="stat-val">'+dockSqft.toFixed(0)+'</div><div class="stat-lbl">Total SqFt</div></div>'+
+            '<div class="stat-box"><div class="stat-val" style="font-size:18px">'+fmt$(dockTotal)+'</div><div class="stat-lbl">Total Value</div></div>'+
+          '</div>':'')+
+        '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+
+          '<label class="btn btn-primary" style="cursor:pointer">📂 Upload Dock CSV/XLSX <input type="file" accept=".csv,.xlsx" style="display:none" onchange="importDockFile(this)"></label>'+
+          (dockLoaded?'<button class="btn btn-ghost btn-sm" onclick="exportDockData()">⬇ Export</button>':'')+''+
+          (dockLoaded?'<button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="clearDockData()">Clear</button>':'')+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    // ── GRAND TOTAL SUMMARY ──
+    ((apexLoaded||dockLoaded)?
+    '<div class="card">'+
+      '<div class="card-header" style="background:var(--navy-dark)">'+
+        '<div class="card-title" style="color:var(--accent)">📊 GRAND TOTAL INVENTORY SUMMARY</div>'+
+      '</div>'+
+      '<div class="card-body">'+
+        buildGrandSummary(apexTotal, apexSqft, dockTotal, dockSqft)+
+      '</div>'+
+    '</div>':'');
+}
+
+function buildGrandSummary(apexTotal, apexSqft, dockTotal, dockSqft){
+  var sess = getActiveSession();
+  var wipEntries = sess ? (sess.entries||[]) : [];
+  var wipTotal = wipEntries.reduce(function(a,e){return a+calcValue(e).value;},0);
+  var wipSqft  = wipEntries.reduce(function(a,e){return a+calcBF(e.thk,e.width,e.length,e.qty,e.uom);},0);
+  var grandTotal = wipTotal + apexTotal + dockTotal;
+
+  return '<div class="summary-grid">'+
+    '<div class="stat-box"><div class="stat-val" style="font-size:16px">'+fmt$(wipTotal)+'</div><div class="stat-lbl">WIP Counted</div></div>'+
+    '<div class="stat-box"><div class="stat-val" style="font-size:16px">'+fmt$(apexTotal)+'</div><div class="stat-lbl">APEX Lots</div></div>'+
+    '<div class="stat-box"><div class="stat-val" style="font-size:16px">'+fmt$(dockTotal)+'</div><div class="stat-lbl">Shipping Dock</div></div>'+
+    '<div class="stat-box" style="background:var(--green)"><div class="stat-val" style="font-size:20px">'+fmt$(grandTotal)+'</div><div class="stat-lbl">GRAND TOTAL</div></div>'+
+  '</div>'+
+  '<div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">'+
+    '<button class="btn btn-gold btn-lg" onclick="exportFullInventory()">📊 Export Full Inventory for Abby</button>'+
+  '</div>';
+}
+
+// ── IMPORT FUNCTIONS ───────────────────────────────────────────────────────
+function importApexFile(input){
+  var file = input.files[0]; if(!file) return;
+  showToast('Reading APEX file...');
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var text = e.target.result;
+    var lines = text.split('\n');
+    var headers = lines[0].replace(/"/g,'').split(',');
+    var lots = [];
+    for(var i=1; i<lines.length; i++){
+      var line = lines[i].trim(); if(!line) continue;
+      var vals = line.replace(/"/g,'').split(',');
+      if(vals.length < 12) continue;
+      lots.push({
+        part:        vals[0]||'',
+        part_desc:   vals[1]||'',
+        lot_number:  vals[2]||'',
+        qty:         vals[3]||'0',
+        uom:         vals[4]||'',
+        engc:        vals[5]||'',
+        specie_code: vals[6]||'',
+        specie_desc: vals[7]||'',
+        grade_code:  vals[8]||'',
+        grade_desc:  vals[9]||'',
+        rough_thk:   vals[10]||'',
+        width:       vals[11]||'0',
+        lot_date:    vals[12]||'',
+        vendor_num:  vals[13]||'',
+        vendor_name: vals[14]||'',
+      });
+    }
+    STATE.apexLots = lots;
+    save();
+    showToast('✓ Loaded '+lots.length+' APEX lots');
+    renderImport();
+  };
+  reader.readAsText(file);
+}
+
+function importDockFile(input){
+  var file = input.files[0]; if(!file) return;
+  showToast('Reading dock file...');
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var text = e.target.result;
+    var lines = text.split('\n');
+    var items = [];
+    for(var i=1; i<lines.length; i++){
+      var line = lines[i].trim(); if(!line) continue;
+      var vals = line.split(',');
+      if(vals.length < 10) continue;
+      var qty   = parseFloat(vals[8])||0;
+      var price = parseFloat(vals[9])||0;
+      var width = parseFloat(vals[21])||0;
+      var len   = parseFloat(vals[22])||0;
+      var sqft  = width>0&&len>0 ? width*len/144*qty : 0;
+      items.push({
+        customer:  (vals[2]||'').replace(/"/g,''),
+        order_no:  vals[4]||'',
+        part_desc: (vals[17]||'').replace(/"/g,''),
+        qty:       qty,
+        price:     price,
+        width:     width,
+        length:    len,
+        sqft:      sqft,
+      });
+    }
+    STATE.dockItems = items.filter(function(r){return r.price>0;});
+    save();
+    showToast('✓ Loaded '+STATE.dockItems.length+' dock items');
+    renderImport();
+  };
+  reader.readAsText(file);
+}
+
+function clearApexData(){ if(confirm('Clear APEX lot data?')){ STATE.apexLots=[]; save(); renderImport(); } }
+function clearDockData(){ if(confirm('Clear dock data?')){ STATE.dockItems=[]; save(); renderImport(); } }
+
+// ── EXPORT APEX VALUED LOTS ────────────────────────────────────────────────
+function exportApexValuation(){
+  if(!STATE.apexLots||!STATE.apexLots.length){showToast('No APEX data loaded');return;}
+  var headers = ['LotNumber','PartDesc','Engc','Specie','Grade','Qty','UOM','Width','SqFt','UnitCost','TotalValue','Method','Breakdown'];
+  var rows = [headers.join(',')];
+  STATE.apexLots.forEach(function(r){
+    var v = apexValueLot(r);
+    rows.push([
+      r.lot_number, '"'+r.part_desc+'"', r.engc,
+      v.specie, v.grade, r.qty, r.uom, r.width,
+      v.sqft.toFixed(2), v.unitCost.toFixed(4), v.value.toFixed(2),
+      '"'+v.method+'"', '"'+(v.breakdown||'').replace(/"/g,"'")+'"'
+    ].join(','));
+  });
+  downloadCSV(rows.join('\n'), 'IDI_APEX_Valued_Lots');
+  showToast('✓ APEX valuation exported');
+}
+
+// ── EXPORT DOCK DATA ──────────────────────────────────────────────────────
+function exportDockData(){
+  if(!STATE.dockItems||!STATE.dockItems.length){showToast('No dock data loaded');return;}
+  var headers = ['Customer','OrderNo','PartDesc','Qty','Price','Width','Length','SqFt'];
+  var rows = [headers.join(',')];
+  STATE.dockItems.forEach(function(r){
+    rows.push(['"'+r.customer+'"',r.order_no,'"'+r.part_desc+'"',r.qty,r.price.toFixed(2),r.width,r.length,r.sqft.toFixed(2)].join(','));
+  });
+  downloadCSV(rows.join('\n'), 'IDI_Shipping_Dock');
+  showToast('✓ Dock data exported');
+}
+
+// ── EXPORT FULL INVENTORY FOR ABBY ────────────────────────────────────────
+function exportFullInventory(){
+  var sess = getActiveSession();
+  var date = sess ? sess.date : new Date().toISOString().slice(0,10);
+  var rows = [];
+
+  // Section 1: WIP Counted Items
+  rows.push('"=== WIP INVENTORY ==="');
+  rows.push('"Location","Counter","Date","Time","Type","Specie","Grade","THK","Width","Length","UOM","QTY","SqFt","UnitCost","TotalValue","ValMethod","Rework","OrderYN","LotNumber","Notes"');
+  if(sess){
+    (sess.entries||[]).forEach(function(e){
+      var sf = calcBF(e.thk,e.width,e.length,e.qty,e.uom);
+      var v  = calcValue(e);
+      var dt = e.createdAt ? new Date(e.createdAt) : null;
+      rows.push([
+        '"'+(e.location||e.zone||'')+'"','"'+(e.counter||'')+'"',
+        dt?dt.toLocaleDateString():'',dt?dt.toLocaleTimeString():'',
+        e.type,e.specie,e.grade,e.thk,e.width,e.length,e.uom,e.qty,
+        sf.toFixed(2),v.unitCost.toFixed(4),v.value.toFixed(2),
+        '"'+v.method+'"',e.rework?'Y':'N',e.orderYN||'N',
+        '"'+(e.lotNumber||'')+'"','"'+(e.notes||'')+'"'
+      ].join(','));
+    });
+  }
+
+  // Section 2: APEX Lots
+  rows.push('');
+  rows.push('"=== APEX LOTS ==="');
+  rows.push('"LotNumber","PartDesc","Engc","Specie","Grade","Qty","UOM","Width","SqFt","UnitCost","TotalValue","Method"');
+  if(STATE.apexLots){
+    STATE.apexLots.forEach(function(r){
+      var v = apexValueLot(r);
+      rows.push([r.lot_number,'"'+r.part_desc+'"',r.engc,v.specie,v.grade,r.qty,r.uom,r.width,v.sqft.toFixed(2),v.unitCost.toFixed(4),v.value.toFixed(2),'"'+v.method+'"'].join(','));
+    });
+  }
+
+  // Section 3: Shipping Dock
+  rows.push('');
+  rows.push('"=== SHIPPING DOCK (Finished Goods) ==="');
+  rows.push('"Customer","OrderNo","PartDesc","Qty","Value","SqFt"');
+  if(STATE.dockItems){
+    STATE.dockItems.forEach(function(r){
+      rows.push(['"'+r.customer+'"',r.order_no,'"'+r.part_desc+'"',r.qty,r.price.toFixed(2),r.sqft.toFixed(2)].join(','));
+    });
+  }
+
+  // Grand total summary
+  var wipTotal  = sess ? (sess.entries||[]).reduce(function(a,e){return a+calcValue(e).value;},0) : 0;
+  var apexTotal = STATE.apexLots ? STATE.apexLots.reduce(function(a,r){return a+apexValueLot(r).value;},0) : 0;
+  var dockTotal = STATE.dockItems ? STATE.dockItems.reduce(function(a,r){return a+r.price;},0) : 0;
+  rows.push('');
+  rows.push('"=== GRAND TOTAL SUMMARY ==="');
+  rows.push('"Category","Value"');
+  rows.push(['"WIP Counted"',wipTotal.toFixed(2)].join(','));
+  rows.push(['"APEX Lots"',apexTotal.toFixed(2)].join(','));
+  rows.push(['"Shipping Dock"',dockTotal.toFixed(2)].join(','));
+  rows.push(['"GRAND TOTAL"',(wipTotal+apexTotal+dockTotal).toFixed(2)].join(','));
+
+  downloadCSV(rows.join('\n'), 'IDI_FULL_INVENTORY_'+date);
+  showToast('✓ Full inventory exported for Abby!');
+}
+
+function downloadCSV(csv, filename){
+  var blob = new Blob([csv], {type:'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href=url; a.download=filename+'_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// Periodically refresh header meta
+setInterval(function(){ try{renderHeaderMeta();}catch(e){} }, 15000);
+
+</script>
+</body>
+</html>
